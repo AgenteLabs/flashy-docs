@@ -7,9 +7,9 @@ for Flashy ID assertions and the delegated authority they carry, as
 removed; this page follows that list. Where a guide in this repository
 disagrees with this page, this page was measured and the guide was not.
 
-Measured against flashyid at `536b5c6` (branch `claude/dreamy-bell-2e5nq3`;
-`packages/sdk/package.json` declares `@flashyid/sdk` `0.1.1`). Repository:
-<https://github.com/FlashyLabs/flashyid>.
+Measured against flashyid at `98adaf1` (branch `claude/dreamy-bell-2e5nq3`;
+`packages/sdk/package.json` declares `@flashyid/sdk` `0.2.0`). Repository:
+<https://github.com/FlashyLabs/flashyid> (private).
 
 ## Where it comes from
 
@@ -19,8 +19,11 @@ Measured against flashyid at `536b5c6` (branch `claude/dreamy-bell-2e5nq3`;
   library. The SDK is the `packages/sdk` manifest.
 - Node `>=18`, ESM with a CommonJS build. One runtime dependency: `jose`.
 - `publishConfig.access` is `public` and a tag-triggered publish workflow
-  exists (`docs/publishing-flashyid-sdk.md`); whether a given version is on
-  the public registry is not something this checkout can confirm. See
+  exists (`docs/publishing-flashyid-sdk.md`). **`0.1.1` is on the public
+  registry** (`npm view @flashyid/sdk`, 2026-10-10), so `npm install
+  @flashyid/sdk` works; the `0.2.0` this checkout declares is not yet
+  published, and its two changes from 0.1.1 — the `par` field on a grant link
+  and the enforcement gate failing closed — are marked below. See
   [Local setup](../guides/setup-local.md).
 - The SDK does not implement an OAuth client. There is no `FlashyIDClient`,
   no `FlashyID` class, no `authorizeUrl`, no `exchangeCode`, no `mintGrant`.
@@ -55,7 +58,7 @@ interface FlashyIdAssertion { sub: string; del?: GrantChain; claims: Record<stri
 
 | Export | Behaviour |
 |---|---|
-| `verifyAssertion(token, opts)` → `Promise<FlashyIdAssertion \| null>` | Verifies signature, `iss`, `aud`, `exp` with `jose`'s `jwtVerify`. The key set defaults to `${issuer}/.well-known/jwks.json`, fetched and cached per issuer. **Never throws**: a missing, malformed, expired, wrong-issuer, wrong-audience or badly-signed token is `null`. A `del` claim that is not a well-formed `GrantChain` is dropped (`del: undefined`) but stays visible in `claims`. |
+| `verifyAssertion(token, opts)` → `Promise<FlashyIdAssertion \| null>` | Verifies signature, `iss`, `aud`, `exp` with `jose`'s `jwtVerify`. The key set defaults to `${issuer}/.well-known/jwks.json`, fetched and cached per issuer. **Never throws**: a missing, malformed, expired, wrong-issuer, wrong-audience or badly-signed token is `null`. A `del` claim that is not a well-formed `GrantChain` (since 0.2.0 every link must carry `par`, a string or `null`) is dropped (`del: undefined`) but stays visible in `claims`. |
 | `authorize(token, demand, opts & { nowSec, revokedJtis?, trustedRoots? })` → `Promise<{ assertion, result: GrantResult } \| null>` | `null` when the assertion does not verify. Otherwise refuses `empty_chain` (no `del`), `broken_chain` (a malformed `del`, or a chain whose leaf holder is not the assertion's `sub`), whatever `verifyChain` refuses, `untrusted_root` when `trustedRoots` is set and the root is not in it (checked **before** the mandate, so an untrusted root is never masked as a missing scope), and then whatever `permits` refuses. On success `result` is the `EffectiveGrant`. |
 
 ## The issuer surface — `src/sdk/sign.ts`
@@ -72,7 +75,7 @@ Pure functions over a delegation **chain**. Time is an argument, never read
 from a clock.
 
 ```ts
-interface GrantLink { iss: string; sub: string; scp: string[]; res: string[]; lim: Limit; iat: number; exp: number; jti: string }
+interface GrantLink { iss: string; sub: string; scp: string[]; res: string[]; lim: Limit; iat: number; exp: number; jti: string; par: string | null }
 type GrantChain = GrantLink[]                                   // root-first; chain[0].iss is the accountable human
 interface Limit { approval_at_or_above?: Impact; spend_max?: number }
 const IMPACT_ORDER = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
@@ -83,9 +86,9 @@ interface Demand { scope: string; resource?: string; amount?: number; impact?: I
 
 | Export | Behaviour |
 |---|---|
-| `issueRoot({ rootHuman, holder, scp, res, lim?, iat, exp, jti })` | A one-link chain issued by the accountable human. |
-| `attenuate(chain, { holder, scp?, res?, lim?, iat, exp, jti })` → `GrantChain \| Refusal` | Appends a link whose `iss` is the parent's `sub`. Refuses `chain_widened` when `scp` or `res` is not a subset of the parent's, or `lim` is looser (a raised approval bar, a dropped bar the parent had, a higher or dropped `spend_max`). Expiry is the one field **capped** rather than refused: `min(exp, parent.exp)`. |
-| `verifyChain(chain, nowSec, revokedJtis = new Set())` → `GrantResult` | `empty_chain`; `revoked` (any link, ancestor-first); `expired` when `link.exp <= nowSec`; `broken_chain` when `link.iss !== parent.sub`; `chain_widened` at any hop, independent of how the chain was built. Effective limit is the tightest across the chain, effective expiry the minimum. |
+| `issueRoot({ rootHuman, holder, scp, res, lim?, iat, exp, jti })` | A one-link chain issued by the accountable human; its `par` is `null`. |
+| `attenuate(chain, { holder, scp?, res?, lim?, iat, exp, jti })` → `GrantChain \| Refusal` | Appends a link whose `iss` is the parent's `sub` and whose `par` is the parent's `jti`. Refuses `chain_widened` when `scp` or `res` is not a subset of the parent's, or `lim` is looser (a raised approval bar, a dropped bar the parent had, a higher or dropped `spend_max`). Expiry is the one field **capped** rather than refused: `min(exp, parent.exp)`. |
+| `verifyChain(chain, nowSec, revokedJtis = new Set())` → `GrantResult` | `empty_chain`; `broken_chain` when the root's `par` is not `null`; `revoked` (any link, ancestor-first); `expired` when `link.exp <= nowSec`; `broken_chain` when `link.iss !== parent.sub` or `link.par !== parent.jti` (a splice — a leaf lifted from one chain under a same-holder parent in another); `chain_widened` at any hop, independent of how the chain was built. Effective limit is the tightest across the chain, effective expiry the minimum. A structural check, not a signature check: `authorize` does both. |
 | `permits(effective, demand)` → `true \| Refusal` | `out_of_mandate` for a scope not granted, a resource not granted, or `amount > lim.spend_max`; `approval_required` when `demand.impact` is at or above `lim.approval_at_or_above`. `true` means *proceed without a co-signature*. |
 | `rootsWithin(effective, trustedRoots)` → `true \| Refusal` | `untrusted_root` unless `effective.root` is in the set. An empty set refuses every chain. |
 | `impactRank(i)`, `IMPACT_ORDER` | The severity ladder the approval bar is measured on. |
@@ -95,13 +98,14 @@ interface Demand { scope: string; resource?: string; amount?: number; impact?: I
 | Code | Meaning |
 |---|---|
 | `chain_widened` | a link grants more scope, resource, or a looser limit than its parent |
-| `broken_chain` | a link's issuer is not the holder above it; the leaf holder is not the assertion's subject; or `del` is malformed |
+| `broken_chain` | a link's issuer is not the holder above it, or its `par` is not that link's `jti`; the root binds a parent; the leaf holder is not the assertion's subject; or `del` is malformed |
 | `expired` | a link is past its expiry at `nowSec` |
 | `revoked` | a link, or one above it, is in `revokedJtis` |
 | `out_of_mandate` | scope, resource or spend exceeds the chain's effective grant |
 | `approval_required` | in mandate but at or above the human-approval bar |
 | `scope_unmapped` | a charter capability maps to no registered scope |
 | `untrusted_root` | sound, but rooted at a principal this party did not agree to accept |
+| `adapter_unavailable` | `enforce` only, never `evaluateGrant`: the enforcement adapter threw or timed out and the gate failed closed |
 | `empty_chain` | no links |
 
 ### The charter is the grant — `src/grants/fromCharter.ts`, `src/init/charterGrants.ts`
@@ -122,8 +126,8 @@ command (`bin: flashyid`) reads `./flashyos.roles.json` through them.
 |---|---|
 | `evaluateGrant(chain, demand, { nowSec, revokedJtis? })` → `{ action: 'ALLOW' \| 'ESCALATE' \| 'DENY', reason?, code?, escalateAtOrAbove? }` | Pure. `verifyChain` then `permits`. Exactly one refusal, `approval_required`, becomes `ESCALATE` (with the bar); every other refusal is `DENY` with its code. |
 | `grantAdapter()` | An `EnforcementAdapter` backed by `evaluateGrant`. |
-| `recordOnly` | The default adapter: always `ALLOW`. |
-| `enforce(decision, adapter, { timeoutMs = 5000, onUnavailable? })` | Runs the adapter under `withTimeout`; on a throw or timeout falls back to `ALLOW` (recorded only) and calls `onUnavailable(error)`. |
+| `recordOnly` | The adapter an org with none configured gets: always `ALLOW`. |
+| `enforce(decision, adapter, { timeoutMs = 5000, unavailable = 'deny', onUnavailable? })` | Runs the adapter under `withTimeout`; on a throw or timeout calls `onUnavailable(error)` and answers per `unavailable`: `'deny'` (the default) → `DENY` with code `adapter_unavailable`; `'escalate'` → `ESCALATE` at `LOW`; `'allow'` → `ALLOW`, recorded only. Until 0.2.0 the fallback was `ALLOW` unconditionally; a configured adapter that is unreachable now fails closed, and record-only is a choice written in the caller's code. |
 | `withTimeout(promise, ms)` | Rejects after `ms`. |
 
 Full contract: `packages/sdk/docs/enforcement-gate.md` in flashyid.

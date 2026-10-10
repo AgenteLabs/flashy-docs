@@ -7,10 +7,11 @@ holds the grant kernel in which delegation is always attenuation. Every name
 below is an export pinned by `packages/sdk/src/public-api.test.ts`; the
 signatures are the [FlashyID API](../api/flashyid-api.md) page's.
 
-Measured against flashyid at `a2706c0` (branch `claude/dreamy-bell-2e5nq3`;
-`packages/sdk/src` is byte-identical to the `536b5c6` the API page measured —
-the one commit between them renames the root package to the server and fixes
-repository docs).
+Measured against flashyid at `98adaf1` (branch `claude/dreamy-bell-2e5nq3`;
+`packages/sdk/package.json` declares `@flashyid/sdk` `0.2.0`). The version on
+the public registry is `0.1.1` (`npm view`, 2026-10-10); 0.2.0's two changes
+from it are the `par` field on a grant link and the enforcement gate failing
+closed, both described below.
 
 ## First, What the SDK Is Not
 
@@ -97,7 +98,10 @@ const chain = attenuate(root, {
 
 Each link carries `scp` (scopes), `res` (resource patterns), `lim`
 (`spend_max` in minor units, `approval_at_or_above` on the impact ladder
-`LOW < MEDIUM < HIGH < CRITICAL`), `iat`, `exp`, `jti`.
+`LOW < MEDIUM < HIGH < CRITICAL`), `iat`, `exp`, `jti`, and `par` — the `jti`
+of the parent link it attenuates, `null` on the root. `attenuate` sets it, so
+a link lifted from one chain and dropped under a same-holder parent in another
+fails verification even though its issuer and holder line up.
 
 ### Attenuation
 
@@ -126,9 +130,12 @@ verification.
 ### Verification and Revocation
 
 `verifyChain(chain, nowSec, revokedJtis)` checks revocation (ancestor-first),
-expiry, continuity (`link.iss === parent.sub`) and narrowing, and folds the
-chain to an `EffectiveGrant`: the tightest limit, the earliest expiry, the
-leaf holder, the accountable root.
+expiry, continuity (`link.iss === parent.sub` **and** `link.par ===
+parent.jti`; a root whose `par` is not `null` is a spliced sub-chain) and
+narrowing, and folds the chain to an `EffectiveGrant`: the tightest limit, the
+earliest expiry, the leaf holder, the accountable root. It is a check over the
+chain's *structure*, not its signatures — `authorize` does both, and is what a
+relying party calls.
 
 ```javascript
 import { verifyChain } from '@flashyid/sdk'
@@ -213,13 +220,20 @@ evaluateGrant(chain, { scope: 'payment.execute', amount: 2500, impact: 'CRITICAL
 evaluateGrant(chain, { scope: 'payment.execute', amount: 9000 }, { nowSec })
 // { action: 'DENY', code: 'out_of_mandate', reason: 'amount exceeds spend_max' }
 
-// The async wrapper runs an adapter under a timeout; unreachable → ALLOW recorded only, and onUnavailable fires
+// The async wrapper runs an adapter under a timeout. If the adapter throws or times out, onUnavailable
+// fires and the gate answers per `unavailable`: 'deny' (the default — DENY, code adapter_unavailable),
+// 'escalate' (a human decides), or 'allow' (the pre-0.2 record-only fallback, now a choice written in code)
 const decision = await enforce(
   { chain, demand: { scope: 'payment.execute', amount: 2500 }, nowSec },
   grantAdapter(),
-  { timeoutMs: 5000, onUnavailable: (err) => console.error('enforcement adapter unavailable', err) },
+  { timeoutMs: 5000, unavailable: 'deny', onUnavailable: (err) => console.error('enforcement adapter unavailable', err) },
 )
 ```
+
+A configured adapter that is unreachable fails **closed**: an enforcement that
+answers ALLOW the moment its policy service is down is a boundary an attacker
+clears by unplugging it. `recordOnly` — the adapter an org with none
+configured gets — still answers ALLOW.
 
 Run the gate before the thing it protects. Never ship a way to mint authority
 ahead of the check that enforces it.
@@ -279,9 +293,10 @@ const signer = { privateKey, issuer: 'https://id.flashyid.com', audience: 'https
 // earn(): a privileged service credential, scope rewards:issue, 300 s by default
 const issuerJws = await mintIssuerToken(signer, { subject: 'org/flashy-settlement' })
 
-// execute(): a holder's consent to ONE rail draft — typ 'consent', 120 s by default
+// execute(): a holder's consent to ONE rail draft — typ 'consent', 120 s by default.
+// draftId is the rail draft's content-addressed id (see Rails Consent), never a typed string
 const consentJws = await mintConsentToken(signer, {
-  draftId: 'transfer:payment:p_1', holderId: 'h_2c91', action: 'transfer', approvedAt: new Date(),
+  draftId: draft.id, holderId: 'h_2c91', action: 'transfer', approvedAt: new Date(),
 })
 
 // spendUnderGrant(): the rail's flat, capped grant — typ 'grant', jti = grantId
@@ -320,6 +335,7 @@ and `railGrantFromChain` on an unsound or uncapped chain.
 | `out_of_mandate` | scope, resource or spend exceeds the effective grant |
 | `approval_required` | in mandate, but at or above the human-approval bar |
 | `scope_unmapped` | a charter capability maps to no registered scope |
+| `adapter_unavailable` | `enforce` only: the enforcement adapter threw or timed out and the gate failed closed |
 
 ## House Rules
 

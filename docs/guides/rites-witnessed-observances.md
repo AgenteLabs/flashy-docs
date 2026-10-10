@@ -69,7 +69,7 @@ observances performed against them.
 {
   "contract": "ritual/1",
   "subject": "org/ritualos",
-  "generated": "2026-09-01T06:00:00Z",
+  "generated": "2026-10-10T06:00:00Z",
   "liturgies": [
     {
       "id": "daily-office",
@@ -82,23 +82,30 @@ observances performed against them.
   ],
   "observances": [
     {
-      "id": "obs-2026-09-01-flashyos",
+      "id": "obs-2026-10-09-flashy-ledger",
       "liturgy": "daily-office",
-      "performer": "agent/flashyos-ci",
-      "for": "org/flashyos",
-      "at": "2026-09-01T04:23:00Z",
-      "recorded": "2026-09-01T04:23:07Z",
-      "evidence": "https://github.com/FlashyLabs/flashyos/actions/runs/17284",
+      "performer": "agent/flashy-ledger-ci",
+      "for": "org/flashy-ledger",
+      "at": "2026-10-09T11:23:02Z",
+      "recorded": "2026-10-09T11:23:16Z",
+      "evidence": "https://github.com/FlashyLabs/flashy-ledger/actions/runs/37923379270",
       "state": "witnessed",
       "witness": {
         "by": "org/gda-capital",
         "basis": "https://gda.group/.well-known/flashyos-directory.json",
-        "at": "2026-09-01T05:00:00Z"
+        "at": "2026-10-09T12:00:00Z"
       }
     }
   ]
 }
 ```
+
+The `evidence` above is a real run of flashy-ledger's `shiplog.yml` workflow
+— the public repository's own refresh of its `shipped/1` log — and it is the
+kind of URL the rule asks for: one a stranger can open. An earlier version of
+this sample cited a run in `FlashyLabs/flashyos`, which is a private
+repository; a stranger following that link gets a 404, so it would have failed
+the format's own evidence rule.
 
 ### A Liturgy
 
@@ -154,9 +161,9 @@ The witness `by` must be **neither the performer nor its principal**, and
 
 ```json
 "witness": {
-  "by": "org/gda-capital",                                   // not org/flashyos
+  "by": "org/gda-capital",                                   // not org/flashy-ledger
   "basis": "https://gda.group/.well-known/flashyos-directory.json",  // gda's URL
-  "at": "2026-09-01T05:00:00Z"
+  "at": "2026-10-09T12:00:00Z"
 }
 ```
 

@@ -82,16 +82,18 @@ Reproduce reported bugs. Confirm they're real. Add extra details.
 ### Example
 
 ```
-Title: Confirmed on Node 18 + 20
+Title: Confirmed on Node 22 + 24
 
 I can reproduce this on:
-- Node 18.2.0, Ubuntu 22.04
-- Node 20.1.0, macOS 13
+- Node 22.12.0, Ubuntu 24.04
+- Node 24.1.0, macOS 15
 
-It happens with @flashylabs/ledger 1.0.5 but NOT with 1.0.4.
+It happens with @flashylabs/ledger built from commit <sha> but NOT from its
+parent commit.
 
-The issue appears when the amount string contains exactly 2 decimals.
-Amount '100.00' fails, but '100' and '100.000' work.
+The issue appears only when the decimal is a whole number: fromDecimal(100, 2)
+throws PrecisionError, while fromDecimal(100.5, 2) and fromDecimal(100.25, 2)
+settle. Amounts are numbers throughout — there is no string form to try.
 ```
 
 ### Skills Gained
@@ -129,20 +131,24 @@ Find a bug with a clear fix. Write code. Submit a PR.
 ### Example
 
 ```
-Title: Fix: Reject amounts with too many decimals
+Title: Fix: toMinor rounded an over-precise decimal instead of refusing it
 
 Fixes #456
 
 What was broken:
-Ledger accepted toMinor('100.999999'), which is invalid.
+Rails' toMinor(100.999) returned 10100 — a holding rounded without anyone
+asking. The ledger's fromDecimal refuses over-precision; the Gold helper
+over it has to as well.
 
 How I fixed it:
-Added validation in toMinor() to reject > 2 decimals.
+toMinor is fromDecimal(decimal, GOLD_DECIMALS) with no rounding step of its
+own, so the ledger's PrecisionError reaches the caller.
 
 Tests:
-- toMinor('100.00') → 10000 ✓
-- toMinor('100.999') → throws ✓
-- toMinor('100') → 10000 ✓
+- toMinor(100)     → 10000 ✓
+- toMinor(0.01)    → 1 ✓
+- toMinor(100.999) → throws PrecisionError ✓
+- toMinor('100')   → throws PrecisionError — amounts are numbers, never strings ✓
 ```
 
 ### Skills Gained
@@ -182,7 +188,7 @@ Find gaps in docs. Clarify confusing sections. Fix broken examples.
    - Fix links
    - Update version numbers
 
-4. Run `npm run lint:markdown`
+4. Run `npm test` — every relative link resolves and every JavaScript sample parses
 
 5. Open a PR:
    - Title: "Docs: Clarify [topic]" or "Docs: Add [example]"
@@ -195,10 +201,10 @@ Find gaps in docs. Clarify confusing sections. Fix broken examples.
 Title: Docs: Clarify consent token lifecycle
 
 This PR clarifies:
-- How consent tokens expire (5 minutes by default)
-- What happens if token expires before execution
-- How to request a new token
-- Added example showing timeout handling
+- How a flashyID-minted consent token expires (120 seconds by default, mintConsentToken)
+- What happens if the token expires before execute() runs
+- How the holder approves again — a new consent, bound to the same draft id
+- Added example showing the expired-token path
 
 Updated:
 - docs/guides/rails-consent.md

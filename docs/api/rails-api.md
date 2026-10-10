@@ -7,19 +7,23 @@ an export of that file; behaviour and error codes are read from `src/rails.mjs`,
 repository disagrees with this page, this page was measured and the guide was
 not.
 
-Measured against flashy-rails at `e5a90a9` (branch `claude/dreamy-bell-2e5nq3`;
-`package.json` declares `@flashylabs/rails` `1.0.0`). Repository:
-<https://github.com/FlashyLabs/flashy-rails>.
+Measured against flashy-rails at `1fff537` (branch `claude/dreamy-bell-2e5nq3`;
+`package.json` declares `@flashylabs/rails` `1.0.0`, `private: false`, no
+`publishConfig`). Repository: <https://github.com/FlashyLabs/flashy-rails>
+(private).
 
 ## Where it comes from
 
+- **Not on the public registry.** `npm view @flashylabs/rails` answered 404 on
+  2026-10-10, and the manifest declares no publish target. Install from the
+  sibling checkout ([Local setup](../guides/setup-local.md)).
 - Node `>=22`, ESM. The implementation is JSDoc-annotated `.mjs`; a
-  hand-written `types/index.d.ts` is the TypeScript surface.
+  hand-written `types/index.d.ts` is the TypeScript surface. The draft digest
+  below uses `node:crypto`, so the service is Node-only.
 - Its one dependency is `@flashylabs/ledger`, resolved as `file:vendor/ledger`
-  — a vendored build whose manifest reads `0.8.0`. `mongodb` is optional.
-- The package name is `@flashylabs/rails`. The repository's own `README.md`
-  and `docs/api.md` still write `import … from 'flashy-rails'`; the manifest
-  is the name a resolver sees.
+  — a vendored build whose manifest reads `1.0.0`. `mongodb` is optional.
+- The package name is `@flashylabs/rails`; the repository's `README.md` and
+  `docs/api.md` import it under that name.
 - Amounts a caller passes are **person-facing decimals** (`25`, `10.5`);
   everything the ledger stores is minor units. `toMinor` / `toGold` are the
   only conversion, and they live here, not in the ledger.
@@ -58,9 +62,9 @@ const balance = await rails.balance('hunter_7f3a') // { minor: 1500, gold: 15, s
 | `toGold(minor)` | `toDecimal(minor, 2)` — presentation only |
 
 Amounts are integer **numbers** (the ledger's branded `Minor`). The JSDoc in
-`src/consent.mjs` still types `capMinor` as `bigint`; the tests, the `.d.ts`
-and the repository's CLAUDE.md say `number`, and a `bigint` literal throws the
-moment it meets a ledger amount.
+`src/consent.mjs` still types `capMinor` as `bigint`; the `Draft` typedef in
+`src/rails.mjs`, the tests, the `.d.ts` and the repository's CLAUDE.md say
+`number`, and a `bigint` literal throws the moment it meets a ledger amount.
 
 ## `RailsService` — `src/rails.mjs`
 
@@ -74,11 +78,11 @@ moment it meets a ledger amount.
 | `history(identityId)` | `readonly Entry[]` | Oldest first. |
 | `reconcile(identityId)` | `{ ok, entries, balance, sealHead, problems }` | Reads history and stored balance and runs `reconcileEntries`. |
 | `earn({ identityId, amount, source, idempotencyKey, occurredAt?, metadata? })` | `AppendResult` | Kind `EARN`. Refuses `INVALID_AMOUNT`, `MISSING_IDEMPOTENCY_KEY`, `MISSING_SOURCE` (a source with a `type` is required). No consent — receiving is not consented to. |
-| `draftRedeem({ identityId, amount, source, idempotencyKey, metadata? })` | `Draft` | **Pure; writes nothing.** `{ id: 'redeem:<key>', action: 'redeem', identityId, amountMinor, source, idempotencyKey, metadata }`, frozen. |
-| `draftTransfer({ fromId, toId, amount, source, idempotencyKey, metadata? })` | `Draft` | Pure. `{ id: 'transfer:<key>', action: 'transfer', identityId: fromId, toId, amountMinor, … }`, frozen. |
-| `execute(draft, consent)` | `AppendResult` (redeem) or `AppendResult[]` (transfer) | **The one place value leaves a holder.** Throws `CONSENT_REQUIRED` with no consent, `CONSENT_MISMATCH` unless `consent.draftId === draft.id`, `consent.holderId === draft.identityId` and `consent.action === draft.action`. A redeem posts one `SPEND`; a transfer posts the ledger's `postTransfer` pair via `appendAll` and throws `STORE_NOT_TRANSACTIONAL` on a store without it. `consentedAt` is written into the entry's metadata. |
-| `spendUnderGrant({ grant, amount, source, idempotencyKey, metadata? })` | `{ result, grant }` | `assertSpendable(grant, amountMinor, now)` runs **before any write**; then one `SPEND` on `grant.holderId` with `grantId` and `spenderId` in metadata. The returned grant is drawn down by `debitGrant` — unless `result.deduplicated`, in which case it is unchanged, so a replay never draws a grant twice. |
-| `reverse({ entry, reason, occurredAt? })` | `AppendResult` | The ledger's `reverse`: a mirror `REVERSAL` entry. History is never rewritten. |
+| `draftRedeem({ identityId, amount, source, idempotencyKey, metadata? })` | `Draft` | **Pure; writes nothing.** `{ id, action: 'redeem', identityId, amountMinor, source, idempotencyKey, metadata }`, frozen. The `id` is **content-addressed**: `redeem:<idempotencyKey>:<sha256>`, the digest over canonical JSON (keys sorted, `undefined` dropped) of `{ identityId, toId, amountMinor, source }` — so a consent bound to the id is bound to what the draft moves, not merely to its key. |
+| `draftTransfer({ fromId, toId, amount, source, idempotencyKey, metadata? })` | `Draft` | Pure. `{ id: 'transfer:<key>:<sha256>', action: 'transfer', identityId: fromId, toId, amountMinor, … }`, frozen, the same digest rule. Throws `SELF_TRANSFER` when `fromId === toId`: a draft an agent can hold should not describe a movement that can never execute. |
+| `execute(draft, consent)` | `AppendResult` (redeem) or `AppendResult[]` (transfer) | **The one place value leaves a holder.** Throws `CONSENT_REQUIRED` with no consent; `INVALID_AMOUNT` unless `draft.amountMinor` is a positive safe integer (a redeem negates it, so a negative would reach the ledger as a credit); then recomputes the draft id from the draft's own fields and throws `CONSENT_MISMATCH` when `draft.id` does not match — a draft that crossed a wire is a claim, not a fact; then `CONSENT_MISMATCH` unless `consent.draftId === draft.id`, `consent.holderId === draft.identityId` and `consent.action === draft.action`. A redeem posts one `SPEND`; a transfer posts the ledger's `postTransfer` pair via `appendAll` and throws `STORE_NOT_TRANSACTIONAL` on a store without it. `consentedAt` is written into the entry's metadata. |
+| `spendUnderGrant({ grant, amount, spenderId?, source, idempotencyKey, metadata? })` | `{ result, grant }` | `GRANT_ASSET_MISMATCH` unless `grant.assetId` is the tenant's Flashy Gold id; `GRANT_SPENDER_MISMATCH` when `spenderId` is given and is not `grant.spenderId`. `assertSpendable(grant, amountMinor, now)` runs **before any write**. Then the cap is measured **against the record**: every entry on the holder's books carrying this `grantId` in metadata (excluding the one with this very `idempotencyKey`, so a replay dedups rather than counting itself) is summed, and `GRANT_CAP_EXCEEDED` refuses when settled + asked would pass `capMinor` — whatever `remainingMinor` the caller presented, which is a number the caller wrote. Then one `SPEND` on `grant.holderId` with `grantId` and `spenderId` in metadata. The returned grant is drawn down by `debitGrant` — unless `result.deduplicated`, in which case it is unchanged, so a replay never draws a grant twice. |
+| `reverse({ entry, reason, occurredAt? })` | `AppendResult` | The caller names an entry by `id` and `idempotencyKey`; the **record** supplies it (`findByIdempotencyKey` on this tenant), and `ENTRY_NOT_FOUND` refuses when nothing matches, the ids disagree, or the entry is not on the Flashy Gold chain. The mirror `REVERSAL` is built from the recorded entry, never from the caller's object. History is never rewritten. |
 
 `approve(draft, holderId, approvedAt)` is a convenience that returns
 `consentTo({ draftId: draft.id, holderId, action: draft.action, approvedAt })`.
@@ -116,15 +120,20 @@ through **unwrapped** so a caller can tell which layer refused.
 | Code | HTTP | Thrown by |
 |---|---|---|
 | `CONSENT_REQUIRED` | 403 | `execute` with no consent |
-| `CONSENT_MISMATCH` | 403 | `execute` when draft id, holder or action differ |
+| `CONSENT_MISMATCH` | 403 | `execute` when the draft's id does not match its contents, or the consent's draft id, holder or action differ |
 | `GRANT_REVOKED` | 403 | `attenuate`, `assertSpendable` |
 | `GRANT_EXPIRED` | 403 | `assertSpendable` |
-| `GRANT_EXCEEDED` | 403 | `assertSpendable` |
+| `GRANT_EXCEEDED` | 403 | `assertSpendable` — the amount is above the presented `remainingMinor` |
+| `GRANT_CAP_EXCEEDED` | 403 | `spendUnderGrant` — what the record already holds under this `grantId` plus this spend would pass `capMinor` |
+| `GRANT_ASSET_MISMATCH` | 403 | `spendUnderGrant` on a grant for another asset |
+| `GRANT_SPENDER_MISMATCH` | 403 | `spendUnderGrant` when the presented `spenderId` is not the grant's |
 | `GRANT_WIDENED` | 400 | `issueGrant`, `attenuate` |
 | `NOT_TRANSFERABLE` | 400 | constructor exported; the transfer path surfaces the ledger's own `ASSET_NOT_TRANSFERABLE` |
-| `INVALID_AMOUNT` | 400 | any command whose `amount` is not a positive finite number |
+| `SELF_TRANSFER` | 400 | `draftTransfer` with `fromId === toId` (the ledger refuses it again in `postTransfer`) |
+| `INVALID_AMOUNT` | 400 | any command whose `amount` is not a positive finite number; `execute` on a draft whose `amountMinor` is not a positive safe integer |
 | `MISSING_SOURCE` | 400 | `earn`, both drafts, `spendUnderGrant` |
 | `MISSING_IDEMPOTENCY_KEY` | 400 | any command without a key |
+| `ENTRY_NOT_FOUND` | 404 | `reverse` when the named entry is not on this tenant's Flashy Gold books |
 | `STORE_NOT_TRANSACTIONAL` | 500 | `execute` on a transfer with a non-transactional store |
 
 ## Reconciliation — `src/reconcile.mjs`

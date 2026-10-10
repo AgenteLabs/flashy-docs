@@ -5,9 +5,8 @@ engine. Every sample on this page names an export the package actually has;
 the names and signatures are the [Ledger API](../api/ledger-api.md) page's,
 read from `src/index.ts`.
 
-Measured against flashy-ledger at `7b254be` (branch `claude/dreamy-bell-2e5nq3`;
-`src/` is byte-identical to the `eac50d8` the API page measured — the one
-commit between them changes publishing, schemas and repository docs).
+Measured against flashy-ledger at `d2a9c82` (branch `claude/dreamy-bell-2e5nq3`),
+the same commit the API page measured.
 
 ## What Problem Does It Solve?
 
@@ -132,9 +131,14 @@ const total = add(fifty, minor(25))   // 5025
 const debit = negate(fifty)           // -5000
 ```
 
+The brand is a compile-time promise, so `post` re-asserts it at runtime:
+`minor(command.amount)` throws `PrecisionError` on a string, a fraction or
+`undefined`, and a JSON body cannot hash `"500"` into a chain.
+
 `toMinor` / `toGold` are **not** in this package. They are Flashy Rails
 helpers over `fromDecimal` / `toDecimal` with Gold's two decimals — see
-[Rails Consent](rails-consent.md).
+[Rails Consent](rails-consent.md). Both take and return **numbers**; there is
+no `toMinor('100.00')` string form.
 
 ### Entry
 
@@ -314,6 +318,7 @@ Every refusal is a `LedgerError` with a stable `code`:
 | `ZERO_AMOUNT` | `post` on zero; `postTransfer` on zero or negative |
 | `INSUFFICIENT_BALANCE` | `post` without `allowNegative` |
 | `ASSET_NOT_TRANSFERABLE` | `postTransfer` on a `SKILL_XP` asset |
+| `SELF_TRANSFER` | `postTransfer` when sender and recipient are the same identity |
 | `INSUFFICIENT_FOR_CONSUMPTION`, `DUPLICATE_ASSET_IN_COMMAND` | `postConsume` |
 
 There is no `UNKNOWN_HOLDER` (an unknown identity simply has balance `0`) and
@@ -328,7 +333,7 @@ try {
     switch (e.code) {
       case 'INSUFFICIENT_BALANCE': /* not enough funds */ break
       case 'NATURAL_KEY_IDENTITY': /* use surrogateIdentity */ break
-      default: /* e.code is one of the seven above */
+      default: /* e.code is one of the eight above */
     }
   } else throw e
 }

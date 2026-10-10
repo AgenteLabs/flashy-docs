@@ -8,10 +8,10 @@ entries. FlashyID is where the consent and any delegated authority are
 signed in production.
 
 Every sample names exports the packages actually have. Measured against
-flashy-ledger `7b254be`, flashy-rails `d4c012a`, magician `78166e4` and
-flashyid `a2706c0` (all on branch `claude/dreamy-bell-2e5nq3`; the ledger's,
-magician's and the SDK's source is unchanged since the commits the API pages
-measured, and rails' only source change is a JSDoc fix in `gold.mjs`).
+flashy-ledger `d2a9c82`, flashy-rails `1fff537`, magician `8163822` and
+flashyid `98adaf1` (all on branch `claude/dreamy-bell-2e5nq3`; magician's
+core source is unchanged since the `78166e4` its API page measured, and the
+other three are the commits their API pages measured).
 
 ## The Scenario
 
@@ -136,7 +136,7 @@ const draft = rails.draftTransfer({
   source: { type: 'payment', id: 'p_1', description: `introduction ${record.digest.slice(0, 12)}` },
   idempotencyKey: 'payment:p_1',
 })
-// draft.id === 'transfer:payment:p_1'; nothing written
+// draft.id === 'transfer:payment:p_1:<sha256 over holder, recipient, amount and source>'; nothing written
 ```
 
 The introduction digest rides in the entry's `source.description`, so the
@@ -153,7 +153,7 @@ the same four fields arrive as a token flashyID signed — `mintConsentToken`
 import { approve } from '@flashylabs/rails'
 
 const consent = approve(draft, ALICE, new Date())
-// { draftId: 'transfer:payment:p_1', holderId: 'h_2c91', action: 'transfer', approvedAt }
+// { draftId: draft.id, holderId: 'h_2c91', action: 'transfer', approvedAt } — the content-addressed id, never a typed string
 ```
 
 ```javascript

@@ -36,7 +36,7 @@ Every link below points at a page that exists; `npm test` fails otherwise.
 - **[magician-routing.md](docs/guides/magician-routing.md)** — trust/1 graphs, `findPaths` and the veil, the consent machine, sealed introduction/1 records
 - **[flashyid-oauth.md](docs/guides/flashyid-oauth.md)** — `verifyAssertion` / `authorize`, the grant kernel, the enforcement gate, rail tokens (the SDK is not an OAuth client; the guide says where login lives)
 - **[combined-workflow.md](docs/guides/combined-workflow.md)** — End-to-end example: Alice pays Dave in Flashy Gold through a consented, sealed trust chain
-- **[setup-local.md](docs/guides/setup-local.md)** — Building the four packages from sibling checkouts (they are not on the public registry)
+- **[setup-local.md](docs/guides/setup-local.md)** — Building the four packages from sibling checkouts (the ledger and rails are not on the public registry; the Magician core and the FlashyID SDK are — measured 2026-10-10)
 - **[mesh-integration.md](docs/guides/mesh-integration.md)** — Consuming the estate's four standards
 - **[intentmesh-roadmaps.md](docs/guides/intentmesh-roadmaps.md)**, **[rites-witnessed-observances.md](docs/guides/rites-witnessed-observances.md)**, **[aao-governance-conformance.md](docs/guides/aao-governance-conformance.md)** — the `intent/1`, `ritual/1` and AAO formats
 - **[oss-excellence-standard.md](docs/guides/oss-excellence-standard.md)** — The bar every estate repository is measured against

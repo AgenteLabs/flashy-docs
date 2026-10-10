@@ -1,27 +1,31 @@
 # Local Setup: Building From the Sibling Checkouts
 
 How to get the four packages onto a machine so the examples and your own code
-can import them. The honest premise first: **none of the four is something
-this repository can confirm on the public npm registry**, so the working path
-is to check the repositories out side by side and install from disk.
+can import them. The honest premise first: **two of the four are on the public
+npm registry and two are not**, so a plain `npm install` of all four fails on
+a clean machine, and the working path is to check the repositories out side by
+side and install from disk.
 
-Measured against the checkouts named below on 2026-09-28: flashy-ledger
-`7b254be`, flashy-rails `d4c012a`, magician `78166e4`, flashyid `a2706c0`,
-flashy-examples `41619ce` (each on branch `claude/dreamy-bell-2e5nq3`).
+Measured against the checkouts named below on 2026-10-10: flashy-ledger
+`d2a9c82`, flashy-rails `1fff537`, magician `8163822`, flashyid `98adaf1`,
+flashy-examples `50b0fb6` (each on branch `claude/dreamy-bell-2e5nq3`). The
+registry column was measured the same day with `npm view <package> version`
+against `https://registry.npmjs.org/`.
 
-## What each manifest actually says about publishing
+## What each manifest says, and what the registry serves
 
-| Package | Checkout | What the manifest declares |
-|---|---|---|
-| `@flashylabs/ledger` | `flashy-ledger` | `publishConfig.registry` is `https://registry.npmjs.org/`, access `public`, and a tag-triggered publish workflow exists (at `eac50d8` it was GitHub Packages, `restricted`). Whether any version has been published is not visible from a checkout. |
-| `@flashylabs/rails` | `flashy-rails` | Depends on the ledger as `file:vendor/ledger` (a vendored `1.0.0` build since `d4c012a`; `0.8.0` before). No `publishConfig`. |
-| `@magician-network/core` | `magician/packages/core` | A workspace package, version `0.1.0`, no `publishConfig`. |
-| `@flashyid/sdk` | `flashyid/packages/sdk` | `publishConfig.access: public` and a tag-triggered publish workflow exist. Whether any version has been published is not visible from a checkout. |
+| Package | Checkout | What the manifest declares | On the public registry (2026-10-10) |
+|---|---|---|---|
+| `@flashylabs/ledger` | `flashy-ledger` (public) | `1.0.0`; `publishConfig.registry` is `https://registry.npmjs.org/`, access `public`; a tag-triggered publish workflow exists. | **No** — `npm view` answered 404. Versions up to 0.8.0 went to GitHub Packages. |
+| `@flashylabs/rails` | `flashy-rails` (private) | `1.0.0`; depends on the ledger as `file:vendor/ledger` (a vendored `1.0.0` build). No `publishConfig`. | **No** — 404. |
+| `@magician-network/core` | `magician/packages/core` (private) | A workspace package, version `0.1.0`, no `publishConfig`. | **Yes** — `0.1.0`. |
+| `@flashyid/sdk` | `flashyid/packages/sdk` (private) | `0.2.0`; `publishConfig.access: public`; a tag-triggered publish workflow exists. | **Yes** — `0.1.1`. The `0.2.0` the checkout declares is unpublished; the [FlashyID API](../api/flashyid-api.md) page marks what changed. |
 
 `flashy-examples/package.json` declares `@flashylabs/ledger` and
 `@flashylabs/rails` at `^1.0.0`, `@magician-network/core` at `^0.1.0` and
-`@flashyid/sdk` at `^0.1.1` — the versions the sibling manifests declare. Its
-README's install section points at sibling checkouts (`npm install
+`@flashyid/sdk` at `^0.1.1` — ranges the versions above satisfy, so the day
+the ledger and rails publish, the same `npm install` resolves them with no
+edit. Its README's install section points at sibling checkouts (`npm install
 file:../flashy-ledger …`), which is the path below.
 
 ## Prerequisites
@@ -87,20 +91,23 @@ picked up without reinstalling. Rails resolves its own ledger from
 `vendor/ledger`, not from the sibling — two copies of the ledger will be in
 play, which is how the rails repository itself runs.
 
-## 4. What runs, and what does not, at these commits
+The two published packages can come from the registry instead of a checkout
+— `npm install @magician-network/core @flashyid/sdk` — at the cost of reading
+`0.1.1` of the SDK rather than the `0.2.0` a checkout builds.
+
+## 4. What runs at these commits
 
 - Examples `11-intentmesh`, `12-rites`, `13-aao-validation` and
   `14-mesh-consumer` are marked `standalone: true` in
   `examples/manifest.json` and run with no package installed at all:
   `npm run test:standalone`.
-- At `41619ce`, examples `01`–`04` import only names the packages export
-  (`post`, `RailsService`, `parseGraph`, `authorize`, …). Example
-  `05-combined-workflow` still imports names the packages do **not** export —
-  compare its `import` lines against the [API reference](../api/ledger-api.md)
-  pages, which list the exports that exist. Installing the packages does not
-  make that example run; it is the examples repository's work to bring into
-  line. The [Combined Workflow](combined-workflow.md) guide here is written
-  against the real exports and is the sample to start from meanwhile.
+- Examples `01`–`10` are marked `runs: "needs-packages"` in the manifest and
+  import only names the packages export. At `50b0fb6` (commit `5ef78d1`,
+  *examples 01-10 rewritten against the real APIs — every example runs*) all
+  ten run against the sibling builds above; the guides here (for example the
+  [Combined Workflow](combined-workflow.md)) and those examples are written
+  against the same exports, and the [API reference](../api/ledger-api.md)
+  pages list them.
 
 ## 5. Check this repository
 

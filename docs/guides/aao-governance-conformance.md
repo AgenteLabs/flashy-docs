@@ -5,8 +5,9 @@ Learn AAO (Agentic Autonomous Organization), the `@flashyos/aao` manifest format
 > **Canon first.** This guide is a developer walkthrough. The authoritative
 > sources are the AAO spec at [flashyos.com/aao](https://flashyos.com/aao), the
 > naming standard at [flashyos.com/standard](https://flashyos.com/standard), and
-> the `@flashyos/aao` package (developed in `FlashyLabs/flashyos` →
-> `packages/aao`). Where this guide and the canon disagree, the canon wins.
+> the `@flashyos/aao` package on npm (its source is `packages/aao` in
+> `FlashyLabs/flashyos`, a private repository). Where this guide and the canon
+> disagree, the canon wins.
 
 ## What Problem Does It Solve?
 
@@ -261,8 +262,8 @@ two files — no onboarding call.
 - **AAO Spec:** [flashyos.com/aao](https://flashyos.com/aao)
 - **Naming Standard:** [flashyos.com/standard](https://flashyos.com/standard)
 - **What an AAO Is:** [gda.group answer](https://gda.group/answers/what-is-an-ai-autonomous-organization/)
-- **Package:** `@flashyos/aao` (canonical source in `FlashyLabs/flashyos` → `packages/aao`)
-- **A charter in production:** [flashyos.roles.json](https://github.com/FlashyLabs/flashyos/blob/main/flashyos.roles.json)
+- **Package:** `@flashyos/aao` on npm (`npm i @flashyos/aao`); the canonical source is `packages/aao` in `FlashyLabs/flashyos`, a private repository
+- **A charter in production:** [flashyos.com/.well-known/flashyos-charter.json](https://flashyos.com/.well-known/flashyos-charter.json) — FlashyOS's own `flashyos.roles.json`, served where the conformance suite reads it (the repository that holds the file is private; the served charter is public)
 - **Working example:** [Example 13: AAO validation](https://github.com/flashylabs/flashy-examples/tree/main/examples/13-aao-validation)
 
 ## Next Steps

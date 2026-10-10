@@ -183,7 +183,8 @@ Done, and enforced by `npm test`:
 - [x] API references for each subsystem (`docs/api/*.md`), each measured
       against a named commit of its source
 - [x] Local setup guide (`docs/guides/setup-local.md`) — the sibling-checkout
-      install path, since the packages are not on the public registry
+      install path, since two of the four packages (`@flashylabs/ledger`,
+      `@flashylabs/rails`) are not on the public registry; it says which are
 - [x] Link validator (`check:links`) and code sample validator (`check:samples`)
 - [x] Wired into CI (`doc-checks.yml`; `npm test` on every push and PR)
 - [x] `docs/STATUS.md` generated from the sibling manifests, no invented figures

@@ -5,10 +5,8 @@ holder in exactly one place, `execute`, and only with a consent bound to the
 exact draft being executed. Every name below is an export of `src/index.mjs`;
 the signatures are the [Rails API](../api/rails-api.md) page's.
 
-Measured against flashy-rails at `d4c012a` (branch `claude/dreamy-bell-2e5nq3`;
-the one source change since the `e5a90a9` the API page measured is a JSDoc
-fix in `src/gold.mjs` — `toMinor` is typed as the ledger's `Minor` number, as
-this guide says — plus the vendored ledger moving to `1.0.0`).
+Measured against flashy-rails at `1fff537` (branch `claude/dreamy-bell-2e5nq3`),
+the same commit the API page measured.
 
 ## What Problem Does It Solve?
 
@@ -61,15 +59,23 @@ const draft = rails.draftTransfer({
   fromId: alice, toId: dave, amount: 50,
   source: { type: 'payment', id: 'p_1' }, idempotencyKey: 'payment:p_1',
 })
-// draft.id === 'transfer:payment:p_1'   draft.action === 'transfer'
-// draft.identityId === 'h_2c91'         draft.amountMinor === 5000
+// draft.id starts 'transfer:payment:p_1:' and ends in a sha256 over the fields that move
+// draft.action === 'transfer'   draft.identityId === 'h_2c91'   draft.amountMinor === 5000
 // Alice's balance is unchanged: nothing was written
 ```
 
 `draftRedeem({ identityId, amount, source, idempotencyKey })` is the other
-draft: Gold leaving the holder to a redemption. Its id is `redeem:<key>`.
-Drafts carry no expiry of their own; the idempotency key is what makes
-executing one twice settle once.
+draft: Gold leaving the holder to a redemption. Its id starts `redeem:<key>:`.
+
+A draft id is **content-addressed**: `<action>:<idempotencyKey>:<sha256>`, the
+digest taken over canonical JSON of the holder, the recipient, the minor
+amount and the source. A consent is bound to a draft id, so it is bound to
+what the draft moves — a consent for a 1.00 redeem does not authorise a 90.00
+one that merely carries the same key — and `execute` recomputes the id from
+the draft it is handed and refuses one whose contents no longer match. A
+transfer to oneself is refused at draft time (`SELF_TRANSFER`). Drafts carry
+no expiry of their own; the idempotency key is what makes executing one twice
+settle once.
 
 ### Consent
 
@@ -81,7 +87,7 @@ convenience that reads the draft's id and action.
 import { consentTo } from '@flashylabs/rails'
 
 const consent = approve(draft, alice, new Date())
-// === consentTo({ draftId: 'transfer:payment:p_1', holderId: 'h_2c91', action: 'transfer', approvedAt })
+// === consentTo({ draftId: draft.id, holderId: 'h_2c91', action: 'transfer', approvedAt })
 ```
 
 In-process the consent is a frozen value object and carries no expiry. In
@@ -103,8 +109,10 @@ await rails.balance(dave)    // { minor: 5000, gold: 50, symbol: 'FG' }
 ```
 
 Without a consent `execute` throws `CONSENT_REQUIRED`; with a consent for a
-different draft, holder or action it throws `CONSENT_MISMATCH`. Both refuse
-before any read of the store. A redeem returns one `AppendResult`; a transfer
+different draft, holder or action it throws `CONSENT_MISMATCH`. A draft whose
+`amountMinor` is not a positive safe integer is refused (`INVALID_AMOUNT`), and
+so is one whose `id` no longer matches its contents (`CONSENT_MISMATCH`). All
+of these refuse before any read of the store. A redeem returns one `AppendResult`; a transfer
 returns two and needs a `TransactionalLedgerStore` (`STORE_NOT_TRANSACTIONAL`
 otherwise). The consent's `approvedAt` is written into the entry's metadata.
 
@@ -155,11 +163,18 @@ try {
 
 ### Spending Under a Grant
 
-`spendUnderGrant` is the delegated path. `assertSpendable` runs **before any
-write** and throws `GRANT_REVOKED`, then `GRANT_EXPIRED`, then
-`GRANT_EXCEEDED`. The spend lands as one `SPEND` on the holder's Gold with
-`grantId` and `spenderId` in metadata, and the call returns a *new* grant with
-the amount deducted — grants are immutable values, like entries.
+`spendUnderGrant` is the delegated path. The grant must be for the tenant's
+Flashy Gold (`GRANT_ASSET_MISMATCH`), and a caller may name the `spenderId` it
+believes it is acting as (`GRANT_SPENDER_MISMATCH` if that is not the grant's).
+`assertSpendable` runs **before any write** and throws `GRANT_REVOKED`, then
+`GRANT_EXPIRED`, then `GRANT_EXCEEDED`. Then the cap is measured **against the
+record**: what has already settled under this `grantId` on the holder's books,
+read from the store, never the `remainingMinor` the caller presented —
+`GRANT_CAP_EXCEEDED` refuses a spend that would take the settled total past
+`capMinor`, so a grant presented twice with fresh keys draws down once per
+spend, not once per copy. The spend lands as one `SPEND` on the holder's Gold
+with `grantId` and `spenderId` in metadata, and the call returns a *new* grant
+with the amount deducted — grants are immutable values, like entries.
 
 ```javascript
 const { result, grant: carolAfter } = await rails.spendUnderGrant({
@@ -309,14 +324,19 @@ which layer refused.
 | Code | HTTP | When |
 |---|---|---|
 | `CONSENT_REQUIRED` | 403 | `execute` with no consent |
-| `CONSENT_MISMATCH` | 403 | consent names another draft, holder or action |
+| `CONSENT_MISMATCH` | 403 | consent names another draft, holder or action; or the draft's id does not match its contents |
 | `GRANT_REVOKED` | 403 | `attenuate` or a spend on a revoked grant |
 | `GRANT_EXPIRED` | 403 | a spend after `expiresAt` |
-| `GRANT_EXCEEDED` | 403 | a spend above `remainingMinor` |
+| `GRANT_EXCEEDED` | 403 | a spend above the presented `remainingMinor` |
+| `GRANT_CAP_EXCEEDED` | 403 | a spend that, with what the record already holds under this grant, would pass `capMinor` |
+| `GRANT_ASSET_MISMATCH` | 403 | a spend under a grant for another asset |
+| `GRANT_SPENDER_MISMATCH` | 403 | a spend presenting a `spenderId` that is not the grant's |
 | `GRANT_WIDENED` | 400 | `issueGrant` / `attenuate` asked for more than the parent has |
-| `INVALID_AMOUNT` | 400 | an amount that is not a positive finite number |
+| `SELF_TRANSFER` | 400 | `draftTransfer` from a holder to themself |
+| `INVALID_AMOUNT` | 400 | an amount that is not a positive finite number; a draft whose `amountMinor` is not a positive safe integer |
 | `MISSING_SOURCE` | 400 | a command without `source.type` |
 | `MISSING_IDEMPOTENCY_KEY` | 400 | a command without a key |
+| `ENTRY_NOT_FOUND` | 404 | `reverse` naming an entry the record does not hold |
 | `STORE_NOT_TRANSACTIONAL` | 500 | a transfer on a store without `appendAll` |
 
 ```javascript

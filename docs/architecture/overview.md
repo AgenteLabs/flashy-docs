@@ -5,11 +5,12 @@ settlement, trust-routed introductions and delegated identity. This page
 explains how they fit together; every claim about a package is what its
 source does, not what a diagram would like it to do.
 
-Measured against flashy-ledger `7b254be`, flashy-rails `d4c012a`, magician
-`78166e4` and flashyid `a2706c0` (all on branch `claude/dreamy-bell-2e5nq3`).
+Measured against flashy-ledger `d2a9c82`, flashy-rails `1fff537`, magician
+`8163822` and flashyid `98adaf1` (all on branch `claude/dreamy-bell-2e5nq3`).
 The per-package detail is on the [API pages](../api/ledger-api.md), each of
-which names the commit it read; the package source those pages describe is
-unchanged at these commits apart from a JSDoc fix in rails' `gold.mjs`.
+which names the commit it read; magician's core source is unchanged since the
+`78166e4` its page measured, and the other three are the commits their pages
+measured.
 
 ## The Four Systems
 
@@ -77,8 +78,9 @@ constrained delegation.
 - `earn` credits without consent — receiving is not consented to, but a
   `source` is required so no Gold is minted without a reason on the record.
 - `draftRedeem` / `draftTransfer` are pure; `execute(draft, consent)` is the
-  one place value leaves a holder, and the consent must name that exact draft,
-  holder and action.
+  one place value leaves a holder, and the consent must name that exact draft
+  (by its content-addressed id — a digest over what the draft moves), holder
+  and action.
 - `issueGrant` → `attenuate` (refuses `GRANT_WIDENED`) → `spendUnderGrant`,
   which runs `assertSpendable` before any write; `revoke` returns a revoked
   copy.
@@ -206,10 +208,10 @@ and returns numbers.
 
 ## Error Model
 
-- **Ledger:** `LedgerError` with codes `INSUFFICIENT_BALANCE`, `ZERO_AMOUNT`, `MISSING_IDEMPOTENCY_KEY`, `NATURAL_KEY_IDENTITY`, `ASSET_NOT_TRANSFERABLE`, `INSUFFICIENT_FOR_CONSUMPTION`, `DUPLICATE_ASSET_IN_COMMAND`. A replay is not an error.
-- **Rails:** `RailsError(code, httpStatus, message)` — `CONSENT_REQUIRED`, `CONSENT_MISMATCH`, `GRANT_*`, `INVALID_AMOUNT`, `MISSING_SOURCE`, `MISSING_IDEMPOTENCY_KEY`, `STORE_NOT_TRANSACTIONAL`. Ledger errors pass through unwrapped.
+- **Ledger:** `LedgerError` with codes `INSUFFICIENT_BALANCE`, `ZERO_AMOUNT`, `MISSING_IDEMPOTENCY_KEY`, `NATURAL_KEY_IDENTITY`, `ASSET_NOT_TRANSFERABLE`, `SELF_TRANSFER`, `INSUFFICIENT_FOR_CONSUMPTION`, `DUPLICATE_ASSET_IN_COMMAND`; `PrecisionError` when an amount is not a whole, safe number. A replay is not an error.
+- **Rails:** `RailsError(code, httpStatus, message)` — `CONSENT_REQUIRED`, `CONSENT_MISMATCH`, `GRANT_*`, `SELF_TRANSFER`, `INVALID_AMOUNT`, `MISSING_SOURCE`, `MISSING_IDEMPOTENCY_KEY`, `ENTRY_NOT_FOUND`, `STORE_NOT_TRANSACTIONAL`. Ledger errors pass through unwrapped.
 - **Magician:** no error class. Parsers and the consent machine throw a plain `Error` whose message starts with the refusing format (`trust/1:`, `graph:`, `intent:`, `consent:`, `introduction/1:`); `findPaths` returns `[]` rather than throwing.
-- **FlashyID:** refusals are **values** — `null` from `verifyAssertion` / `authorize` for an inauthentic token, and `Refusal { ok: false, code }` from the kernel (`chain_widened`, `broken_chain`, `expired`, `revoked`, `out_of_mandate`, `approval_required`, `untrusted_root`, `empty_chain`, `scope_unmapped`).
+- **FlashyID:** refusals are **values** — `null` from `verifyAssertion` / `authorize` for an inauthentic token, and `Refusal { ok: false, code }` from the kernel (`chain_widened`, `broken_chain`, `expired`, `revoked`, `out_of_mandate`, `approval_required`, `untrusted_root`, `empty_chain`, `scope_unmapped`; `adapter_unavailable` from `enforce` alone, when a configured adapter is unreachable and the gate fails closed).
 
 ## Time Model
 

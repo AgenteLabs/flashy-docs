@@ -6,8 +6,8 @@ Every code sample names exports the packages actually have (see the
 [API pages](../api/ledger-api.md)); nothing here is a configuration flag the
 packages do not read.
 
-Measured against flashy-ledger `7b254be`, flashy-rails `d4c012a`, magician
-`78166e4` and flashyid `a2706c0` (all on branch `claude/dreamy-bell-2e5nq3`).
+Measured against flashy-ledger `d2a9c82`, flashy-rails `1fff537`, magician
+`8163822` and flashyid `98adaf1` (all on branch `claude/dreamy-bell-2e5nq3`).
 
 ## Before You Deploy
 
@@ -175,6 +175,10 @@ Relying party  ── @flashyid/sdk: verifyAssertion → authorize → evaluateG
   you federate with. An empty set refuses every chain.
 - **Revocation** is a `revokedJtis` set you supply at check time; the SDK
   holds no list. Keep it where every relying party can read it quickly.
+- **The gate fails closed.** `enforce` answers `DENY` (`adapter_unavailable`)
+  when a configured adapter throws or times out; `unavailable: 'allow'`
+  restores the record-only fallback and is a choice written in your code, not
+  a default.
 
 ```javascript
 import { authorize, evaluateGrant } from '@flashyid/sdk'
@@ -241,7 +245,7 @@ the packages compose in your process, not through a `fullStack` object.
 
 ### Operations
 - [ ] Runbook: start, stop, recover, rotate a signing key (JWKS `kid`)
-- [ ] Alerts on `onUnavailable` from the enforcement gate — a fallback to record-only is a CRITICAL event
+- [ ] Alerts on `onUnavailable` from the enforcement gate — an unreachable adapter is a CRITICAL event, and the gate denies until it is back unless you chose `unavailable: 'allow'`
 - [ ] Backup and restore tested for the ledger collection
 
 ## Common Pitfalls

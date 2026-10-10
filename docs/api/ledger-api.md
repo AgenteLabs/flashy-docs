@@ -6,17 +6,21 @@ file; every signature and refusal is read from the source, not from a guide.
 Where a guide in this repository disagrees with this page, this page was
 measured and the guide was not.
 
-Measured against flashy-ledger at `eac50d8` (branch `claude/dreamy-bell-2e5nq3`;
+Measured against flashy-ledger at `d2a9c82` (branch `claude/dreamy-bell-2e5nq3`;
 `package.json` declares `@flashylabs/ledger` `1.0.0`; the top `CHANGELOG.md`
-entry is `0.8.0`). Repository: <https://github.com/FlashyLabs/flashy-ledger>.
+entry is `[Unreleased]`). Repository: <https://github.com/FlashyLabs/flashy-ledger>
+(public).
 
 ## Where it comes from
 
 - Node `>=22`, ESM (`dist/index.js`) with a CommonJS build (`dist-cjs/`).
-- `publishConfig.registry` is GitHub Packages (`npm.pkg.github.com`, access
-  `restricted`), so `npm install @flashylabs/ledger` from the public registry
-  is not something this checkout can promise. See
-  [Local setup](../guides/setup-local.md) for the sibling-checkout install.
+- `publishConfig` targets the public registry (`https://registry.npmjs.org/`,
+  access `public`) and a tag-triggered publish workflow exists — but **nothing
+  has been published there yet**: `npm view @flashylabs/ledger` answered 404 on
+  2026-10-10. Versions up to 0.8.0 went to GitHub Packages and stay there.
+  Until the first public publish, `npm install @flashylabs/ledger` fails on a
+  clean machine; install from the sibling checkout instead
+  ([Local setup](../guides/setup-local.md)).
 - The domain (`src/domain/`) imports no database driver. `mongodb` is an
   optional peer dependency (`^6.21.0 || ^7.0.0`) needed only by
   `MongoLedgerStore`.
@@ -120,8 +124,8 @@ type ProposedEntry = Omit<Entry, 'id'>
 
 | Export | Behaviour |
 |---|---|
-| `post(state, command)` | Pure. In order: throws `MISSING_IDEMPOTENCY_KEY`, then `assertOpaqueIdentity`, then `ZERO_AMOUNT`, then `INSUFFICIENT_BALANCE` when `state.balance + amount < 0` and `allowNegative !== true`. Returns a `ProposedEntry` whose `hash` chains onto `state.headHash`. |
-| `postTransfer(from, to, command)` | `from`/`to` are `{ state, identityId }`; `command` is a `PostCommand` without `identityId`/`kind`, with a **positive** `amount`. Throws `ZERO_AMOUNT` on zero or negative, `ASSET_NOT_TRANSFERABLE` on `SKILL_XP`. Returns `[debit, credit]`: kinds `TRANSFER_OUT` / `TRANSFER_IN`, idempotency keys `${key}:out` / `${key}:in`. Append both with `appendAll`, never one at a time. |
+| `post(state, command)` | Pure. In order: throws `MISSING_IDEMPOTENCY_KEY`, then `assertOpaqueIdentity`, then re-asserts the `Minor` brand at runtime — `minor(command.amount)` throws `PrecisionError` on a string, a fraction or `undefined`, so a JSON body cannot hash `"500"` into a chain — then `ZERO_AMOUNT`, then `INSUFFICIENT_BALANCE` when `state.balance + amount < 0` and `allowNegative !== true`. Returns a `ProposedEntry` whose `hash` chains onto `state.headHash`. |
+| `postTransfer(from, to, command)` | `from`/`to` are `{ state, identityId }`; `command` is a `PostCommand` without `identityId`/`kind`, with a **positive** `amount`. Re-asserts `minor(amount)`; throws `ZERO_AMOUNT` on zero or negative, `SELF_TRANSFER` when `from.identityId === to.identityId` (both legs would chain onto one head), `ASSET_NOT_TRANSFERABLE` on `SKILL_XP`. Returns `[debit, credit]`: kinds `TRANSFER_OUT` / `TRANSFER_IN`, idempotency keys `${key}:out` / `${key}:in`. Append both with `appendAll`, never one at a time. |
 | `reverse(state, original, reason, occurredAt)` | The mirror entry: kind `REVERSAL`, amount negated, source `{ type: 'reversal', id: original.id, description: reason }`, key `reversal:${original.idempotencyKey}`, `allowNegative: true`. History is never edited. |
 
 ### Multi-asset consumption — `src/domain/consume.ts`
@@ -187,7 +191,7 @@ no update and no delete; `readState` reflects every prior append.
 
 | Adapter | Notes |
 |---|---|
-| `InMemoryLedgerStore` | Transactional. The reference implementation and the conformance target for every other adapter. Keys are scoped by tenant *and* idempotency key. |
+| `InMemoryLedgerStore` | Transactional. The reference implementation and the conformance target for every other adapter. Keys are scoped by tenant *and* idempotency key. `appendAll` (and `append`, which goes through it) **rejects** with a plain `Error` — *the chain head moved. Re-read state and retry* — when a candidate's `previousHash` is not the published head of its (tenant, identity, asset) chain; nothing staged is published. That is the guarantee the Mongo adapter gets from its unique index on `(tenantId, identityId, assetId, previousHash)`, said in code. |
 | `MongoLedgerStore` | `new MongoLedgerStore(db, { collection?, client? })`; collection defaults to `ledger_entries`. Call `ensureIndexes()` once per deployment before writing — it drops the pre-0.2 global indexes and creates tenant-scoped ones. A multi-entry `appendAll` needs `client` for a transaction and refuses without it. |
 | `GoldLedgerReader` | Read-only reader over ClaimYour.Gold's existing `gold_ledger`; **not** a `LedgerStore`. `DEFAULT_FIELDS`, `GOLD_LEDGER_FIELDS`, `resolveFields` map a foreign collection's field names. |
 
@@ -198,7 +202,7 @@ class LedgerError extends Error { readonly code: LedgerErrorCode }
 type LedgerErrorCode =
   | 'INSUFFICIENT_BALANCE' | 'ZERO_AMOUNT' | 'MISSING_IDEMPOTENCY_KEY'
   | 'INSUFFICIENT_FOR_CONSUMPTION' | 'DUPLICATE_ASSET_IN_COMMAND'
-  | 'NATURAL_KEY_IDENTITY' | 'ASSET_NOT_TRANSFERABLE'
+  | 'NATURAL_KEY_IDENTITY' | 'ASSET_NOT_TRANSFERABLE' | 'SELF_TRANSFER'
 class InsufficientForConsumptionError extends LedgerError { readonly shortfalls: readonly Shortfall[] }
 ```
 
