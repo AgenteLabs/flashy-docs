@@ -349,4 +349,4 @@ and `railGrantFromChain` on an unsound or uncapped chain.
 
 - Read the [Combined Workflow](combined-workflow.md) to see a chain become a rail grant beside a sealed introduction
 - Read the [FlashyID API](../api/flashyid-api.md) for every export, measured against source; the provider's own `docs/rail-issuance.md`, `docs/rail-consent.md` and `docs/rail-grant.md` cover the token contracts
-- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/04-flashyid-oauth) run at these commits
+- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/04-flashyid-oauth) run at these commits

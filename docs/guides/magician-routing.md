@@ -321,4 +321,4 @@ if (routes.length === 0) {
 - Learn [FlashyID: Assertions and Delegated Authority](flashyid-oauth.md) — the identity seam `flashyIdProvider` binds to
 - Read the [Combined Workflow](combined-workflow.md) to see a sealed introduction lead into a consented Rails transfer
 - Read the [Magician API](../api/magician-api.md) for every export, measured against source
-- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/03-magician-intro) run at these commits
+- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/03-magician-intro) run at these commits

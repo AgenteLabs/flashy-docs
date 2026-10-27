@@ -366,4 +366,4 @@ try {
 - Learn [Magician Routing](magician-routing.md) — consent-gated introductions, the other place "agents suggest; humans consent" is enforced in code
 - Read [FlashyID: Assertions and Delegated Authority](flashyid-oauth.md) for who signs the consent and grant tokens
 - Read the [Rails API](../api/rails-api.md) for every export, measured against source
-- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/02-rails-consent) run at these commits
+- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/02-rails-consent) run at these commits

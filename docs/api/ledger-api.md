@@ -8,7 +8,7 @@ measured and the guide was not.
 
 Measured against flashy-ledger at `d2a9c82` (branch `claude/dreamy-bell-2e5nq3`;
 `package.json` declares `@flashylabs/ledger` `1.0.0`; the top `CHANGELOG.md`
-entry is `[Unreleased]`). Repository: <https://github.com/FlashyLabs/flashy-ledger>
+entry is `[Unreleased]`). Repository: <https://github.com/AgenteLabs/flashy-ledger>
 (public).
 
 ## Where it comes from

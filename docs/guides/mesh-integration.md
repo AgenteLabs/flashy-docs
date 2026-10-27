@@ -6,7 +6,7 @@ that view honest. This is the *consumer* half of the standards; the producer
 half is each format's own guide.
 
 Working example:
-[Example 14: Mesh Reference Consumer](https://github.com/flashylabs/flashy-examples/tree/main/examples/14-mesh-consumer).
+[Example 14: Mesh Reference Consumer](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/14-mesh-consumer).
 
 ## The shape of a consumer
 

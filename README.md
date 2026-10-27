@@ -14,7 +14,7 @@ Comprehensive guides and references for Ledger, Rails, Magician, and FlashyID. L
 4. 🧭 [Magician Trust](docs/guides/magician-routing.md) (5 min) — Trust graphs and routing
 5. 🔐 [FlashyID Assertions](docs/guides/flashyid-oauth.md) (5 min) — Verified assertions and delegation chains
 
-**Then run the [working examples](https://github.com/flashylabs/flashy-examples):**
+**Then run the [working examples](https://github.com/AgenteLabs/flashy-examples):**
 ```bash
 npm install && npm run examples:ledger
 npm run examples:rails
@@ -80,7 +80,7 @@ All four systems work together — FlashyID signs the assertion and the consent,
 
 ## Running the Examples
 
-All concepts are taught through runnable examples in [flashy-examples](https://github.com/flashylabs/flashy-examples):
+All concepts are taught through runnable examples in [flashy-examples](https://github.com/AgenteLabs/flashy-examples):
 
 ```bash
 npm run examples:ledger           # Ledger basics
@@ -121,7 +121,7 @@ npm test                          # All tests
 └── .github/workflows/        # doc-checks.yml runs both checkers; secret-scan.yml
 ```
 
-Worked examples live in the separate [flashy-examples](https://github.com/flashylabs/flashy-examples) repository.
+Worked examples live in the separate [flashy-examples](https://github.com/AgenteLabs/flashy-examples) repository.
 
 ## Contributing
 
@@ -141,8 +141,8 @@ Apache-2.0. Holder: Flashy Labs.
 ---
 
 **Quick Links:**
-- [Ledger Repo](https://github.com/flashylabs/flashy-ledger)
-- [Rails Repo](https://github.com/flashylabs/flashy-rails)
-- [Magician Repo](https://github.com/flashylabs/magician)
-- [FlashyID Repo](https://github.com/flashylabs/flashyid)
-- [Examples Repo](https://github.com/flashylabs/flashy-examples)
+- [Ledger Repo](https://github.com/AgenteLabs/flashy-ledger)
+- [Rails Repo](https://github.com/AgenteLabs/flashy-rails)
+- [Magician Repo](https://github.com/AgenteLabs/magician)
+- [FlashyID Repo](https://github.com/AgenteLabs/flashyid)
+- [Examples Repo](https://github.com/AgenteLabs/flashy-examples)

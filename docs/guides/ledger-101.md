@@ -350,4 +350,4 @@ try {
 
 - Learn [Rails Consent](rails-consent.md) — the layer that calls `post` on your behalf and gates every debit on the holder's consent
 - Read the [Ledger API](../api/ledger-api.md) for every export, measured against source
-- [Local setup](setup-local.md) — installing the package from a sibling checkout; note its §4 on which examples in [flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/01-ledger-basics) run at these commits
+- [Local setup](setup-local.md) — installing the package from a sibling checkout; note its §4 on which examples in [flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/01-ledger-basics) run at these commits

@@ -9,7 +9,7 @@
   "repositories": [
     {
       "name": "flashy-docs",
-      "url": "github.com/FlashyLabs/flashy-docs",
+      "url": "github.com/AgenteLabs/flashy-docs",
       "default": true,
       "holds": [
         "library",

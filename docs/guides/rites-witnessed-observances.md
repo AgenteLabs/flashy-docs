@@ -5,7 +5,7 @@ recurring, witnessed, consequence-bearing act: a practice happening now, on a
 rhythm a stranger can check.
 
 > **Canon first.** The authoritative source is
-> [`Rites-Network/SPEC.md`](https://github.com/FlashyLabs/Rites-Network/blob/main/SPEC.md).
+> [`Rites-Network/SPEC.md`](https://github.com/AgenteLabs/Rites-Network/blob/main/SPEC.md).
 > Where this guide and the spec disagree, the spec wins.
 
 ## Three Tenses
@@ -88,7 +88,7 @@ observances performed against them.
       "for": "org/flashy-ledger",
       "at": "2026-10-09T11:23:02Z",
       "recorded": "2026-10-09T11:23:16Z",
-      "evidence": "https://github.com/FlashyLabs/flashy-ledger/actions/runs/37923379270",
+      "evidence": "https://github.com/AgenteLabs/flashy-ledger/actions/runs/37923379270",
       "state": "witnessed",
       "witness": {
         "by": "org/gda-capital",
@@ -103,7 +103,7 @@ observances performed against them.
 The `evidence` above is a real run of flashy-ledger's `shiplog.yml` workflow
 — the public repository's own refresh of its `shipped/1` log — and it is the
 kind of URL the rule asks for: one a stranger can open. An earlier version of
-this sample cited a run in `FlashyLabs/flashyos`, which is a private
+this sample cited a run in `AgenteLabs/flashyos`, which is a private
 repository; a stranger following that link gets a 404, so it would have failed
 the format's own evidence rule.
 
@@ -174,7 +174,7 @@ is anchored to a party that answers separately.
 ## Metrics, the Anti-Metric, and the Projection
 
 Standing must be legible without being gameable. Two functions carry that, and
-[Example 12 in flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/12-rites)
+[Example 12 in flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/12-rites)
 implements both.
 
 **Metrics ship the witnessed share with the raw count.** `metrics()` returns
@@ -224,7 +224,7 @@ is an observance climbing the ladder:
   "for": "org/ritualos",
   "at": "2026-09-01T04:00:00Z",
   "recorded": "2026-09-01T04:00:05Z",
-  "evidence": "https://github.com/FlashyLabs/ritualos/actions/runs/9001",
+  "evidence": "https://github.com/AgenteLabs/ritualos/actions/runs/9001",
   "state": "performed"
 }
 ```
@@ -260,8 +260,8 @@ They compose:
 
 ## Resources
 
-- **Spec:** [`Rites-Network/SPEC.md`](https://github.com/FlashyLabs/Rites-Network/blob/main/SPEC.md)
-- **Working example:** [Example 12: ritual/1](https://github.com/flashylabs/flashy-examples/tree/main/examples/12-rites)
+- **Spec:** [`Rites-Network/SPEC.md`](https://github.com/AgenteLabs/Rites-Network/blob/main/SPEC.md)
+- **Working example:** [Example 12: ritual/1](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/12-rites)
 - **The three tenses:** `docs/tenses.md` in the estate
 - **Sibling formats:** `backlog/1` (future), `shipped/1` (past)
 

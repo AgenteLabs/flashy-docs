@@ -41,12 +41,12 @@ file:../flashy-ledger …`), which is the path below.
 
 ```bash
 mkdir flashy && cd flashy
-git clone https://github.com/FlashyLabs/flashy-ledger
-git clone https://github.com/FlashyLabs/flashy-rails
-git clone https://github.com/FlashyLabs/magician
-git clone https://github.com/FlashyLabs/flashyid
-git clone https://github.com/FlashyLabs/flashy-examples
-git clone https://github.com/flashylabs/flashy-docs
+git clone https://github.com/AgenteLabs/flashy-ledger
+git clone https://github.com/AgenteLabs/flashy-rails
+git clone https://github.com/AgenteLabs/magician
+git clone https://github.com/AgenteLabs/flashyid
+git clone https://github.com/AgenteLabs/flashy-examples
+git clone https://github.com/AgenteLabs/flashy-docs
 ```
 
 Before reading anything as "what ships", ask each checkout which branch is its

@@ -9,7 +9,7 @@ disagrees with this page, this page was measured and the guide was not.
 
 Measured against flashyid at `98adaf1` (branch `claude/dreamy-bell-2e5nq3`;
 `packages/sdk/package.json` declares `@flashyid/sdk` `0.2.0`). Repository:
-<https://github.com/FlashyLabs/flashyid> (private).
+<https://github.com/AgenteLabs/flashyid> (private).
 
 ## Where it comes from
 

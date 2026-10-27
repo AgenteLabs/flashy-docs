@@ -309,6 +309,6 @@ echo ".env*" >> .gitignore
 
 - [Ledger API](../api/ledger-api.md) · [Rails API](../api/rails-api.md) · [Magician API](../api/magician-api.md) · [FlashyID API](../api/flashyid-api.md)
 - [Local setup](../guides/setup-local.md)
-- [Working examples](https://github.com/flashylabs/flashy-examples)
+- [Working examples](https://github.com/AgenteLabs/flashy-examples)
 
-**Questions?** File an issue in [flashy-docs](https://github.com/flashylabs/flashy-docs/issues) or [flashy-examples](https://github.com/flashylabs/flashy-examples/issues).
+**Questions?** File an issue in [flashy-docs](https://github.com/AgenteLabs/flashy-docs/issues) or [flashy-examples](https://github.com/AgenteLabs/flashy-examples/issues).

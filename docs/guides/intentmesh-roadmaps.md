@@ -306,12 +306,12 @@ IntentMesh is one of four standards:
 | **Witnessed Observances** | `ritual/1` | Verifiable reputation/standing (Rites) |
 | **Governance** | `aao/1` | Machine-readable authority (GDA-OS) |
 
-See [Example 11: IntentMesh Roadmaps](https://github.com/flashylabs/flashy-examples/tree/main/examples/11-intentmesh) for working code.
+See [Example 11: IntentMesh Roadmaps](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/11-intentmesh) for working code.
 
 ## Resources
 
-- **Full Spec:** [IntentMesh SPEC.md](https://github.com/FlashyLabs/intentmesh/blob/main/SPEC.md)
+- **Full Spec:** [IntentMesh SPEC.md](https://github.com/AgenteLabs/intentmesh/blob/main/SPEC.md)
 - **Adoption Guide:** `npx intentmesh --help`
-- **Reference Implementation:** [intentmesh CLI](https://github.com/FlashyLabs/intentmesh)
+- **Reference Implementation:** [intentmesh CLI](https://github.com/AgenteLabs/intentmesh)
 - **Live Example:** `https://flashygroup.com/.well-known/intent.json`
 

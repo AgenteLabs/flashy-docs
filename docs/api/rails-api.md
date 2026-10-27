@@ -9,7 +9,7 @@ not.
 
 Measured against flashy-rails at `1fff537` (branch `claude/dreamy-bell-2e5nq3`;
 `package.json` declares `@flashylabs/rails` `1.0.0`, `private: false`, no
-`publishConfig`). Repository: <https://github.com/FlashyLabs/flashy-rails>
+`publishConfig`). Repository: <https://github.com/AgenteLabs/flashy-rails>
 (private).
 
 ## Where it comes from

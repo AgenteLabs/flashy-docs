@@ -6,7 +6,7 @@ Learn AAO (Agentic Autonomous Organization), the `@flashyos/aao` manifest format
 > sources are the AAO spec at [flashyos.com/aao](https://flashyos.com/aao), the
 > naming standard at [flashyos.com/standard](https://flashyos.com/standard), and
 > the `@flashyos/aao` package on npm (its source is `packages/aao` in
-> `FlashyLabs/flashyos`, a private repository). Where this guide and the canon
+> `AgenteLabs/flashyos`, a private repository). Where this guide and the canon
 > disagree, the canon wins.
 
 ## What Problem Does It Solve?
@@ -142,7 +142,7 @@ don't work for you:
 
 ## Validation in Code (Example 13)
 
-[Example 13 in flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/13-aao-validation)
+[Example 13 in flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/13-aao-validation)
 is a faithful, dependency-free model of the `@flashyos/aao` static checker —
 `validateCharter` runs the same rules against the `aao:"0.1"` manifest, and
 `conformance` answers the seven questions (the four static answered, the three
@@ -262,9 +262,9 @@ two files — no onboarding call.
 - **AAO Spec:** [flashyos.com/aao](https://flashyos.com/aao)
 - **Naming Standard:** [flashyos.com/standard](https://flashyos.com/standard)
 - **What an AAO Is:** [gda.group answer](https://gda.group/answers/what-is-an-ai-autonomous-organization/)
-- **Package:** `@flashyos/aao` on npm (`npm i @flashyos/aao`); the canonical source is `packages/aao` in `FlashyLabs/flashyos`, a private repository
+- **Package:** `@flashyos/aao` on npm (`npm i @flashyos/aao`); the canonical source is `packages/aao` in `AgenteLabs/flashyos`, a private repository
 - **A charter in production:** [flashyos.com/.well-known/flashyos-charter.json](https://flashyos.com/.well-known/flashyos-charter.json) — FlashyOS's own `flashyos.roles.json`, served where the conformance suite reads it (the repository that holds the file is private; the served charter is public)
-- **Working example:** [Example 13: AAO validation](https://github.com/flashylabs/flashy-examples/tree/main/examples/13-aao-validation)
+- **Working example:** [Example 13: AAO validation](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/13-aao-validation)
 
 ## Next Steps
 
