@@ -31,7 +31,7 @@ Title: fromDecimal refuses a whole-number amount at 2 decimals
 
 Environment:
 - Node 22.x, macOS 13
-- @flashylabs/ledger at commit <sha> (built from the sibling checkout)
+- @flashyos/ledger at commit <sha> (built from the sibling checkout)
 
 Steps:
 1. Materialize FLASHY_GOLD for tenant 'flashy'
@@ -88,7 +88,7 @@ I can reproduce this on:
 - Node 22.12.0, Ubuntu 24.04
 - Node 24.1.0, macOS 15
 
-It happens with @flashylabs/ledger built from commit <sha> but NOT from its
+It happens with @flashyos/ledger built from commit <sha> but NOT from its
 parent commit.
 
 The issue appears only when the decimal is a whole number: fromDecimal(100, 2)
@@ -396,8 +396,8 @@ Start → Bug Report (15 min)
 
 1. **Bugs:** Look for issues labeled `bug` or `help wanted`
 2. **Docs:** Search for `TODO` or broken links
-3. **Examples:** Check the [flashy-examples README](https://github.com/flashylabs/flashy-examples) for what exists and what is wanted
-4. **Features:** Ask in [GitHub Discussions](https://github.com/flashylabs/flashy-examples/discussions)
+3. **Examples:** Check the [flashy-examples README](https://github.com/AgenteLabs/flashy-examples) for what exists and what is wanted
+4. **Features:** Ask in [GitHub Discussions](https://github.com/AgenteLabs/flashy-examples/discussions)
 
 ### Before You Start
 
@@ -408,7 +408,7 @@ Start → Bug Report (15 min)
 ### Open Questions?
 
 - Comment on the issue you want to work on
-- Ask in [GitHub Discussions](https://github.com/flashylabs/flashy-examples/discussions)
+- Ask in [GitHub Discussions](https://github.com/AgenteLabs/flashy-examples/discussions)
 - Join our [Slack community](https://flashygroup.slack.com) (ask for link)
 
 ---

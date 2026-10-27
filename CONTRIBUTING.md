@@ -2,7 +2,7 @@
 
 flashy-docs is the documentation hub for the Flashy ecosystem. This repository
 holds *explanations*; working code lives in
-[flashy-examples](https://github.com/flashylabs/flashy-examples). Link
+[flashy-examples](https://github.com/AgenteLabs/flashy-examples). Link
 generously between them.
 
 ## Before you open a PR
