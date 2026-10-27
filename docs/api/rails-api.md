@@ -1,7 +1,7 @@
 # Rails API — `@flashylabs/rails`
 
 The public surface of Flashy Rails, the settlement and authorisation layer
-over `@flashyos/ledger`, as `src/index.mjs` exports it. Every name below is
+over `@flashylabs/ledger`, as `src/index.mjs` exports it. Every name below is
 an export of that file; behaviour and error codes are read from `src/rails.mjs`,
 `src/consent.mjs`, `src/errors.mjs` and `src/gold.mjs`. Where a guide in this
 repository disagrees with this page, this page was measured and the guide was
@@ -20,7 +20,7 @@ Measured against flashy-rails at `1fff537` (branch `claude/dreamy-bell-2e5nq3`;
 - Node `>=22`, ESM. The implementation is JSDoc-annotated `.mjs`; a
   hand-written `types/index.d.ts` is the TypeScript surface. The draft digest
   below uses `node:crypto`, so the service is Node-only.
-- Its one dependency is `@flashyos/ledger`, resolved as `file:vendor/ledger`
+- Its one dependency is `@flashylabs/ledger`, resolved as `file:vendor/ledger`
   — a vendored build whose manifest reads `1.0.0`. `mongodb` is optional.
 - The package name is `@flashylabs/rails`; the repository's `README.md` and
   `docs/api.md` import it under that name.
@@ -30,7 +30,7 @@ Measured against flashy-rails at `1fff537` (branch `claude/dreamy-bell-2e5nq3`;
 
 ```js
 import { RailsService, approve, issueGrant } from '@flashylabs/rails'
-import { InMemoryLedgerStore } from '@flashyos/ledger'
+import { InMemoryLedgerStore } from '@flashylabs/ledger'
 
 const rails = new RailsService({ store: new InMemoryLedgerStore() })
 

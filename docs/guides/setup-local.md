@@ -16,12 +16,12 @@ against `https://registry.npmjs.org/`.
 
 | Package | Checkout | What the manifest declares | On the public registry (2026-10-10) |
 |---|---|---|---|
-| `@flashyos/ledger` | `flashy-ledger` (public) | `1.0.0`; `publishConfig.registry` is `https://registry.npmjs.org/`, access `public`; a tag-triggered publish workflow exists. | **No** — `npm view` answered 404. Versions up to 0.8.0 went to GitHub Packages. |
+| `@flashylabs/ledger` | `flashy-ledger` (public) | `1.0.0`; `publishConfig.registry` is `https://registry.npmjs.org/`, access `public`; a tag-triggered publish workflow exists. | **No** — `npm view` answered 404. Versions up to 0.8.0 went to GitHub Packages. |
 | `@flashylabs/rails` | `flashy-rails` (private) | `1.0.0`; depends on the ledger as `file:vendor/ledger` (a vendored `1.0.0` build). No `publishConfig`. | **No** — 404. |
 | `@magician-network/core` | `magician/packages/core` (private) | A workspace package, version `0.1.0`, no `publishConfig`. | **Yes** — `0.1.0`. |
 | `@flashyid/sdk` | `flashyid/packages/sdk` (private) | `0.2.0`; `publishConfig.access: public`; a tag-triggered publish workflow exists. | **Yes** — `0.1.1`. The `0.2.0` the checkout declares is unpublished; the [FlashyID API](../api/flashyid-api.md) page marks what changed. |
 
-`flashy-examples/package.json` declares `@flashyos/ledger` and
+`flashy-examples/package.json` declares `@flashylabs/ledger` and
 `@flashylabs/rails` at `^1.0.0`, `@magician-network/core` at `^0.1.0` and
 `@flashyid/sdk` at `^0.1.1` — ranges the versions above satisfy, so the day
 the ledger and rails publish, the same `npm install` resolves them with no

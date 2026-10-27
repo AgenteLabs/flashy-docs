@@ -43,7 +43,7 @@ LedgerStore
 
 ```javascript
 import { MongoClient } from 'mongodb'
-import { MongoLedgerStore, post, fromDecimal, FLASHY_GOLD, materialize, verifyChain } from '@flashyos/ledger'
+import { MongoLedgerStore, post, fromDecimal, FLASHY_GOLD, materialize, verifyChain } from '@flashylabs/ledger'
 
 const client = new MongoClient(process.env.MONGO_URL)      // from Secret Manager, never a file
 await client.connect()

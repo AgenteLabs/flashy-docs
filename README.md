@@ -47,7 +47,7 @@ Each page is measured against a named commit of its package's source and says
 so at the top. Where a guide and an API page disagree, the API page was
 measured.
 
-- **[ledger-api.md](docs/api/ledger-api.md)** — `@flashyos/ledger`: `post`, the store port, entries, errors
+- **[ledger-api.md](docs/api/ledger-api.md)** — `@flashylabs/ledger`: `post`, the store port, entries, errors
 - **[rails-api.md](docs/api/rails-api.md)** — `@flashylabs/rails`: `RailsService`, draft → execute, grants, error codes
 - **[magician-api.md](docs/api/magician-api.md)** — `@magician-network/core`: trust/1, the router, consent, introduction/1
 - **[flashyid-api.md](docs/api/flashyid-api.md)** — `@flashyid/sdk`: verify, authorize, the grant kernel, rail tokens

@@ -31,7 +31,7 @@ Title: fromDecimal refuses a whole-number amount at 2 decimals
 
 Environment:
 - Node 22.x, macOS 13
-- @flashyos/ledger at commit <sha> (built from the sibling checkout)
+- @flashylabs/ledger at commit <sha> (built from the sibling checkout)
 
 Steps:
 1. Materialize FLASHY_GOLD for tenant 'flashy'
@@ -88,7 +88,7 @@ I can reproduce this on:
 - Node 22.12.0, Ubuntu 24.04
 - Node 24.1.0, macOS 15
 
-It happens with @flashyos/ledger built from commit <sha> but NOT from its
+It happens with @flashylabs/ledger built from commit <sha> but NOT from its
 parent commit.
 
 The issue appears only when the decimal is a whole number: fromDecimal(100, 2)

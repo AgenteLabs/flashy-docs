@@ -44,7 +44,7 @@ the Ledger. Everything else is composition in your code.
 
 ```javascript
 import { RailsService } from '@flashylabs/rails'
-import { InMemoryLedgerStore } from '@flashyos/ledger'
+import { InMemoryLedgerStore } from '@flashylabs/ledger'
 
 const store = new InMemoryLedgerStore()
 const rails = new RailsService({ store })
@@ -180,7 +180,7 @@ const [debit, credit] = await rails.execute(draft, consent)
 ### 8. Read Back and Verify
 
 ```javascript
-import { verifyChain as verifyLedgerChain } from '@flashyos/ledger'
+import { verifyChain as verifyLedgerChain } from '@flashylabs/ledger'
 
 await rails.balance(ALICE)   // { minor: 5000, gold: 50, symbol: 'FG' }
 await rails.balance(DAVE)    // { minor: 6000, gold: 60, symbol: 'FG' }
@@ -240,7 +240,7 @@ spender within its cap.
 ## Complete Code Example
 
 ```javascript
-import { InMemoryLedgerStore, verifyChain as verifyLedgerChain } from '@flashyos/ledger'
+import { InMemoryLedgerStore, verifyChain as verifyLedgerChain } from '@flashylabs/ledger'
 import { RailsService, approve } from '@flashylabs/rails'
 import {
   parseGraph, parseIntent, findPaths,
@@ -344,7 +344,7 @@ layer refused.
 
 ```javascript
 import { RailsError } from '@flashylabs/rails'
-import { LedgerError } from '@flashyos/ledger'
+import { LedgerError } from '@flashylabs/ledger'
 
 try {
   await rails.execute(draft, consent)
