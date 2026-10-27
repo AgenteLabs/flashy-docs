@@ -47,7 +47,7 @@ Everything past that is composition in the caller's code — see the
 
 ## System Responsibilities
 
-### Ledger (`@flashylabs/ledger`)
+### Ledger (`@flashyos/ledger`)
 
 **Core responsibility:** append-only settlement with the money invariants.
 

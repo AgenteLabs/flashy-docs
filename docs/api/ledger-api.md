@@ -1,4 +1,4 @@
-# Ledger API — `@flashylabs/ledger`
+# Ledger API — `@flashyos/ledger`
 
 The public surface of the append-only, multi-asset settlement engine, as the
 package's `src/index.ts` exports it. Every name below is an export of that
@@ -7,8 +7,8 @@ Where a guide in this repository disagrees with this page, this page was
 measured and the guide was not.
 
 Measured against flashy-ledger at `d2a9c82` (branch `claude/dreamy-bell-2e5nq3`;
-`package.json` declares `@flashylabs/ledger` `1.0.0`; the top `CHANGELOG.md`
-entry is `[Unreleased]`). Repository: <https://github.com/FlashyLabs/flashy-ledger>
+`package.json` declares `@flashyos/ledger` `1.0.0`; the top `CHANGELOG.md`
+entry is `[Unreleased]`). Repository: <https://github.com/AgenteLabs/flashy-ledger>
 (public).
 
 ## Where it comes from
@@ -16,9 +16,9 @@ entry is `[Unreleased]`). Repository: <https://github.com/FlashyLabs/flashy-ledg
 - Node `>=22`, ESM (`dist/index.js`) with a CommonJS build (`dist-cjs/`).
 - `publishConfig` targets the public registry (`https://registry.npmjs.org/`,
   access `public`) and a tag-triggered publish workflow exists — but **nothing
-  has been published there yet**: `npm view @flashylabs/ledger` answered 404 on
+  has been published there yet**: `npm view @flashyos/ledger` answered 404 on
   2026-10-10. Versions up to 0.8.0 went to GitHub Packages and stay there.
-  Until the first public publish, `npm install @flashylabs/ledger` fails on a
+  Until the first public publish, `npm install @flashyos/ledger` fails on a
   clean machine; install from the sibling checkout instead
   ([Local setup](../guides/setup-local.md)).
 - The domain (`src/domain/`) imports no database driver. `mongodb` is an
@@ -35,7 +35,7 @@ that persists entries. A caller reads state from the store, calls `post`, and
 appends what it returns.
 
 ```js
-import { InMemoryLedgerStore, post, fromDecimal, FLASHY_GOLD, materialize } from '@flashylabs/ledger'
+import { InMemoryLedgerStore, post, fromDecimal, FLASHY_GOLD, materialize } from '@flashyos/ledger'
 
 const gold = materialize(FLASHY_GOLD, { id: 'flashy-gold', tenantId: 'flashy' })
 const store = new InMemoryLedgerStore()

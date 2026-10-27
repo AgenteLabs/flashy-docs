@@ -11,7 +11,7 @@ than filled in from memory.
 
 | System | Package | Declared version | Commit | Branch | Reference |
 |---|---|---|---|---|---|
-| Ledger | `@flashylabs/ledger` | 1.0.0 | `d2a9c82` | `claude/dreamy-bell-2e5nq3` | [api/ledger-api.md](api/ledger-api.md) |
+| Ledger | `@flashyos/ledger` | 1.0.0 | `d2a9c82` | `claude/dreamy-bell-2e5nq3` | [api/ledger-api.md](api/ledger-api.md) |
 | Rails | `@flashylabs/rails` | 1.0.0 | `1fff537` | `claude/dreamy-bell-2e5nq3` | [api/rails-api.md](api/rails-api.md) |
 | Magician (core) | `@magician-network/core` | 0.1.0 | `8163822` | `claude/dreamy-bell-2e5nq3` | [api/magician-api.md](api/magician-api.md) |
 | FlashyID (SDK) | `@flashyid/sdk` | 0.2.0 | `98adaf1` | `claude/dreamy-bell-2e5nq3` | [api/flashyid-api.md](api/flashyid-api.md) |

@@ -1,6 +1,6 @@
 # Ledger 101: Append-Only Settlement
 
-Learn `@flashylabs/ledger`, Flashy's append-only, multi-asset settlement
+Learn `@flashyos/ledger`, Flashy's append-only, multi-asset settlement
 engine. Every sample on this page names an export the package actually has;
 the names and signatures are the [Ledger API](../api/ledger-api.md) page's,
 read from `src/index.ts`.
@@ -29,7 +29,7 @@ a command* into the entry that should exist (or throws), and a storage port,
 store, call `post`, and append.
 
 ```javascript
-import { InMemoryLedgerStore, post, fromDecimal, FLASHY_GOLD, materialize } from '@flashylabs/ledger'
+import { InMemoryLedgerStore, post, fromDecimal, FLASHY_GOLD, materialize } from '@flashyos/ledger'
 
 const store = new InMemoryLedgerStore()
 const gold = materialize(FLASHY_GOLD, { id: 'flashy-gold', tenantId: 'flashy' })
@@ -69,7 +69,7 @@ ObjectIds, bare integers and base58 tokens pass — the guard is deliberately
 narrow so nobody switches it off.
 
 ```javascript
-import { surrogateIdentity, looksLikeNaturalKey } from '@flashylabs/ledger'
+import { surrogateIdentity, looksLikeNaturalKey } from '@flashyos/ledger'
 
 looksLikeNaturalKey('alice@example.com')   // 'an email address'
 looksLikeNaturalKey('h_2c91')              // null
@@ -91,7 +91,7 @@ and `defineAsset` validates a new one at module load (lower-case kebab slug,
 2–8 upper-case symbol, `decimals` in `0..8`, one of four classes).
 
 ```javascript
-import { defineAsset, materialize, FLASHY_GOLD, WHEAT } from '@flashylabs/ledger'
+import { defineAsset, materialize, FLASHY_GOLD, WHEAT } from '@flashyos/ledger'
 
 const PARTNER_POINTS = defineAsset({
   slug: 'partner-points',
@@ -118,7 +118,7 @@ branded so a raw `number` does not type-check as one. For Flashy Gold (2
 decimals): 50.00 FG is `5000`, 0.01 FG is `1`.
 
 ```javascript
-import { fromDecimal, toDecimal, minor, add, negate, PrecisionError } from '@flashylabs/ledger'
+import { fromDecimal, toDecimal, minor, add, negate, PrecisionError } from '@flashyos/ledger'
 
 const fifty = fromDecimal(50, 2)      // 5000
 toDecimal(5000, 2)                    // 50 — a number, for display only
@@ -181,7 +181,7 @@ A transfer is two entries — the sender's `TRANSFER_OUT` and the recipient's
 `TRANSFER_IN` — appended together so the books can never hold one half.
 
 ```javascript
-import { postTransfer } from '@flashylabs/ledger'
+import { postTransfer } from '@flashyos/ledger'
 
 const dave = 'h_7e40'
 const [fromState, toState] = await Promise.all([
@@ -215,7 +215,7 @@ const { balance, headHash } = await store.readState(ref)
 ### Read History and Verify the Chain
 
 ```javascript
-import { verifyChain, balanceOf } from '@flashylabs/ledger'
+import { verifyChain, balanceOf } from '@flashyos/ledger'
 
 const entries = await store.readEntries({ tenantId: 'flashy', identityId: alice, assetId: gold.id }) // oldest first
 const { valid, problems } = verifyChain(entries)   // every hash intact, every link and running balance consistent
@@ -230,7 +230,7 @@ balanceOf(entries)                                  // the fold a stored balance
 `state.balance + amount < 0`, unless the command sets `allowNegative: true`.
 
 ```javascript
-import { LedgerError } from '@flashylabs/ledger'
+import { LedgerError } from '@flashyos/ledger'
 
 try {
   post(await store.readState(ref), {
@@ -251,7 +251,7 @@ The store port has `append`, `readState`, `readEntries` and
 undo an entry is to post its mirror image:
 
 ```javascript
-import { reverse } from '@flashylabs/ledger'
+import { reverse } from '@flashyos/ledger'
 
 const [original] = await store.readEntries({ tenantId: 'flashy', identityId: alice })
 const mirror = reverse(await store.readState(ref), original, 'duplicate award', new Date())
@@ -289,7 +289,7 @@ Keys are unique per tenant. Choose them from the business event
 Assets are isolated by `assetId`; a transfer of one never touches another.
 
 ```javascript
-import { balancesByAsset } from '@flashylabs/ledger'
+import { balancesByAsset } from '@flashyos/ledger'
 
 const wheatRef = { tenantId: 'flashy', identityId: alice, assetId: wheat.id }
 await store.append(post(await store.readState(wheatRef), {
@@ -350,4 +350,4 @@ try {
 
 - Learn [Rails Consent](rails-consent.md) — the layer that calls `post` on your behalf and gates every debit on the holder's consent
 - Read the [Ledger API](../api/ledger-api.md) for every export, measured against source
-- [Local setup](setup-local.md) — installing the package from a sibling checkout; note its §4 on which examples in [flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/01-ledger-basics) run at these commits
+- [Local setup](setup-local.md) — installing the package from a sibling checkout; note its §4 on which examples in [flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/01-ledger-basics) run at these commits

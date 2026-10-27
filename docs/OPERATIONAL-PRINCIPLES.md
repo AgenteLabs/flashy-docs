@@ -258,5 +258,5 @@ Each principle is backed by real incidents (ours or others'). Each one is non-ne
 ## Next
 
 - Read [The House Rules](../README.md#-the-house-rules-enforced) for how these principles are enforced
-- See [Working Examples](https://github.com/flashylabs/flashy-examples) for code that embodies them
+- See [Working Examples](https://github.com/AgenteLabs/flashy-examples) for code that embodies them
 - File issues if you find a place where a principle is violated

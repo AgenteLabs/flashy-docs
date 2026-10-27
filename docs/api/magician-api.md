@@ -9,7 +9,7 @@ measured and the guide was not.
 
 Measured against magician at `f5c4fda` (branch `claude/dreamy-bell-2e5nq3`;
 `packages/core/package.json` declares `@magician-network/core` `0.1.0`).
-Repository: <https://github.com/FlashyLabs/magician>.
+Repository: <https://github.com/AgenteLabs/magician>.
 
 ## Where it comes from
 

@@ -32,7 +32,7 @@ There is no `Rails` class and no `Rails.createConsentToken`. The service is
 
 ```javascript
 import { RailsService, approve } from '@flashylabs/rails'
-import { InMemoryLedgerStore } from '@flashylabs/ledger'
+import { InMemoryLedgerStore } from '@flashyos/ledger'
 
 const rails = new RailsService({ store: new InMemoryLedgerStore() })
 const alice = 'h_2c91'   // opaque ids, as the ledger requires
@@ -204,7 +204,7 @@ holder gives it. Agents suggest; humans consent.
 
 ```javascript
 import { RailsService, approve, toGold } from '@flashylabs/rails'
-import { InMemoryLedgerStore } from '@flashylabs/ledger'
+import { InMemoryLedgerStore } from '@flashyos/ledger'
 
 const rails = new RailsService({ store: new InMemoryLedgerStore() })
 
@@ -229,7 +229,7 @@ console.log(toGold(alice.minor))                // 50 — a number; formatting t
 
 ```javascript
 import { RailsService, issueGrant, attenuate, toMinor, FLASHY_GOLD_ID } from '@flashylabs/rails'
-import { InMemoryLedgerStore } from '@flashylabs/ledger'
+import { InMemoryLedgerStore } from '@flashyos/ledger'
 
 const rails = new RailsService({ store: new InMemoryLedgerStore() })
 await rails.earn({ identityId: 'h_2c91', amount: 100, source: { type: 'quest', id: 'q_1' }, idempotencyKey: 'quest:q_1:h_2c91' })
@@ -341,7 +341,7 @@ which layer refused.
 
 ```javascript
 import { RailsError } from '@flashylabs/rails'
-import { LedgerError } from '@flashylabs/ledger'
+import { LedgerError } from '@flashyos/ledger'
 
 try {
   await rails.execute(draft, consent)
@@ -366,4 +366,4 @@ try {
 - Learn [Magician Routing](magician-routing.md) — consent-gated introductions, the other place "agents suggest; humans consent" is enforced in code
 - Read [FlashyID: Assertions and Delegated Authority](flashyid-oauth.md) for who signs the consent and grant tokens
 - Read the [Rails API](../api/rails-api.md) for every export, measured against source
-- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/flashylabs/flashy-examples/tree/main/examples/02-rails-consent) run at these commits
+- [Local setup](setup-local.md) §4 says which [flashy-examples](https://github.com/AgenteLabs/flashy-examples/tree/main/examples/02-rails-consent) run at these commits

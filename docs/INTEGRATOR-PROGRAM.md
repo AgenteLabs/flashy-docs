@@ -170,7 +170,7 @@ For mission-critical integrations and long-term partnerships.
 
 ### Community Tier
 
-Send an issue to [flashy-examples](https://github.com/flashylabs/flashy-examples/issues/new) with:
+Send an issue to [flashy-examples](https://github.com/AgenteLabs/flashy-examples/issues/new) with:
 
 ```markdown
 # [INTEGRATOR] Your Company Name
@@ -322,8 +322,8 @@ A: Community (1 week), Standard (2 weeks), Strategic (4 weeks).
 ## Questions?
 
 - **Integrations:** [partnerships@flashylabs.com](mailto:partnerships@flashylabs.com)
-- **Technical:** [GitHub Issues](https://github.com/flashylabs/flashy-examples/issues)
-- **Community:** [GitHub Discussions](https://github.com/flashylabs/flashy-examples/discussions)
+- **Technical:** [GitHub Issues](https://github.com/AgenteLabs/flashy-examples/issues)
+- **Community:** [GitHub Discussions](https://github.com/AgenteLabs/flashy-examples/discussions)
 
 ---
 
