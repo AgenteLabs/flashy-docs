@@ -136,7 +136,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ## License
 
-Apache-2.0. Holder: Flashy Labs.
+Apache-2.0. Holder: Agente Labs.
 
 ---
 

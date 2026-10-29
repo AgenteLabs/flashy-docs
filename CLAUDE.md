@@ -102,7 +102,7 @@ git symbolic-ref --short refs/remotes/origin/HEAD
 
 **No secret in a file, a repo, or an artifact.** Secret Manager only. A committed credential is burned the moment it lands and stays burned after deletion.
 
-**The licence is declared once**, in `tools/estate-licences.mjs` in flashyos. This repository is registered as Apache-2.0, holder Flashy Labs.
+**The licence is declared once**, in `tools/estate-licences.mjs` in flashyos. This repository is registered as Apache-2.0, holder Agente Labs.
 
 **A generated file is regenerated, never hand-edited.** `shiplog.fragment.json`, `backlog.fragment.json`, and built outputs are regenerated on every push. Editing one is a change the next run discards.
 
@@ -206,4 +206,4 @@ nowhere until each exists (the Layout above is the promised structure):
 
 ## License
 
-Apache-2.0. Holder: Flashy Labs.
+Apache-2.0. Holder: Agente Labs.
