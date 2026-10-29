@@ -33,7 +33,7 @@ npm test              # runs the doc checks
 - **A generated file is regenerated, never hand-edited** (`shiplog.fragment.json`,
   `backlog.fragment.json`, built outputs).
 - **The licence is declared once**, in `tools/estate-licences.mjs` in flashyos —
-  this repository is Apache-2.0, holder Flashy Labs. Do not re-decide it here.
+  this repository is Apache-2.0, holder Agente Labs. Do not re-decide it here.
 - **No secret in a file, a repo, or an artifact.** Secret Manager only.
 - **Report what happened, including when it is worse than expected.**
 
